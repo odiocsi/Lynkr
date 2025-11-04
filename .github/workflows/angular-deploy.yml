@@ -1,0 +1,28 @@
+name: 💻 Lynkr Frontend CI (Tests Only)
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20' # Recommended latest stable Node version
+
+    - name: 🌐 Install Angular Dependencies
+      # Installs all packages defined in frontend/package.json
+      run: npm install
+      working-directory: frontend 
+
+    - name: 🧪 Run Frontend Tests (Jasmine/Karma)
+      # Executes tests using Headless Chrome configured in karma.conf.js
+      run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI 
+      working-directory: frontend 
