@@ -6,14 +6,11 @@ on:
       - main # Triggers on code push to the main branch
 
 env:
-  AZURE_WEBAPP_NAME: Lynkr-API  # <<-- REPLACE with your App Service Name
-  DOTNET_VERSION: '8.0.x' 
-  # Path to your main API project file relative to the repository root
-  API_PROJECT_PATH: backend/Lynkr/Lynkr.csproj 
-  # Path to your test project file
-  TEST_PROJECT_PATH: backend/Lynkr.Tests/Lynkr.Tests.csproj 
-  # Path to the project containing your DbContext
-  DB_CONTEXT_PROJECT: backend/Lynkr/Lnykr.csproj
+  AZURE_WEBAPP_NAME: Lynkr-API
+  DOTNET_VERSION: 8.0.x
+  API_PROJECT_PATH: Backend/backend/Lynkr/Lynkr.csproj
+  TEST_PROJECT_PATH: Backend/backend/Lynkr.Tests/Lynkr.Tests.csproj
+  DB_CONTEXT_PROJECT: Backend/backend/Lynkr/Lynkr.csproj
 
 jobs:
   build-test-deploy:
