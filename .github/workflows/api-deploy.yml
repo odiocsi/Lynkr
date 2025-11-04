@@ -13,7 +13,7 @@ env:
   DB_CONTEXT_PROJECT: Backend/backend/Lynkr/Lynkr.csproj
 
 jobs:
-  build-test-deploy:
+  build:
     runs-on: ubuntu-latest
     
     steps:
@@ -26,7 +26,10 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore Backend/backend/backend.sln
-
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
     - name: 🧪 Run Backend Tests
       # Runs tests using the path defined in the env variables
       run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --no-build --verbosity normal
@@ -34,7 +37,11 @@ jobs:
 
     - name: Build and Publish API Artifact
       run: dotnet publish ${{ env.API_PROJECT_PATH }} --configuration Release -o ${{ env.DOTNET_ROOT }}/myapp
-      
+
+  migration:
+    runs-on: ubuntu-latest
+    
+    steps:
     - name: ⚙️ Run EF Core Migrations
       working-directory: Backend/backend/Lynkr
       run: |
@@ -46,6 +53,10 @@ jobs:
         AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
       if: success() && env.AZURE_SQL_CONNECTION_STRING != '' # Ensures this step only runs if previous steps succeeded
 
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
     - name: ⬆️ Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
