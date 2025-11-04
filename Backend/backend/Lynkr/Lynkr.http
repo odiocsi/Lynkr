@@ -1,0 +1,6 @@
+@Lynkr_HostAddress = http://localhost:5223
+
+GET {{Lynkr_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

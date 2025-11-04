@@ -1,0 +1,63 @@
+pswd.txt
+Backend/backend/Lynkr/appsettings.Development.json
+
+# ----------------------------------------
+# 1. Visual Studio / IDE Configuration
+# ----------------------------------------
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.ide
+*.vssscc
+*.vcxproj.user
+
+# ----------------------------------------
+# 2. .NET Core / ASP.NET Core (Backend)
+# ----------------------------------------
+
+
+## Project Binaries and Output
+# Ignore compiled binaries wherever they may be created
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.pdb
+*.intellisense.xml
+
+## Artifacts and Build Files
+*.rsp
+*.trx # Test results
+
+## CRITICAL: Azure and Deployment Secrets
+# Publish settings file containing credentials - MUST BE IGNORED!
+*.publishsettings 
+
+# ----------------------------------------
+# 3. Angular (Frontend)
+# ----------------------------------------
+
+## Dependency directory
+/frontend/node_modules
+
+## Angular build output and cache
+/frontend/dist/
+/frontend/out/
+/frontend/tmp/
+/frontend/.angular/cache
+/frontend/coverage # Test reports
+
+## Compiled files
+/frontend/*.log
+*.tsbuildinfo
+
+# ----------------------------------------
+# 4. General OS and Tooling
+# ----------------------------------------
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
