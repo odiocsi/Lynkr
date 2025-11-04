@@ -6,14 +6,11 @@ on:
       - main # Triggers on code push to the main branch
 
 env:
-  AZURE_WEBAPP_NAME: my-unique-dotnet-app  # <<-- REPLACE with your App Service Name
-  DOTNET_VERSION: '8.0.x' 
-  # Path to your main API project file relative to the repository root
-  API_PROJECT_PATH: backend/SocialMedia.Api/SocialMedia.Api.csproj 
-  # Path to your test project file
-  TEST_PROJECT_PATH: backend/SocialMedia.Tests.Api/SocialMedia.Tests.Api.csproj 
-  # Path to the project containing your DbContext
-  DB_CONTEXT_PROJECT: backend/SocialMedia.Data/SocialMedia.Data.csproj 
+  AZURE_WEBAPP_NAME: Lynkr-API
+  DOTNET_VERSION: 8.0.x
+  API_PROJECT_PATH: Backend/backend/Lynkr/Lynkr.csproj
+  TEST_PROJECT_PATH: Backend/backend/Lynkr.Tests/Lynkr.Tests.csproj
+  DB_CONTEXT_PROJECT: Backend/backend/Lynkr/Lynkr.csproj
 
 jobs:
   build-test-deploy:
@@ -28,7 +25,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore Backend/backend/backend.sln
 
     - name: 🧪 Run Backend Tests
       # Runs tests using the path defined in the env variables
