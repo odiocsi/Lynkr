@@ -37,9 +37,6 @@ jobs:
     - name: 🧪 Run Backend Tests
       run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --no-build --verbosity normal
 
-    - name: Build and Publish API Artifact
-      run: dotnet publish ${{ env.API_PROJECT_PATH }} --configuration Release -o ${{ env.DOTNET_ROOT }}/myapp
-
   migration:
     runs-on: ubuntu-latest
     needs: test
@@ -63,6 +60,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Build and Publish API Artifact
+      run: dotnet publish ${{ env.API_PROJECT_PATH }} --configuration Release -o ${{ env.DOTNET_ROOT }}/myapp
 
     - name: ⬆️ Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
