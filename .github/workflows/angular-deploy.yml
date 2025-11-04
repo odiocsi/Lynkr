@@ -1,5 +1,4 @@
-name: 💻 Lynkr Frontend CI (Tests Only)
-
+name: 💻 Lynkr Frontend CI/CD
 on:
   push:
     branches:
