@@ -1,0 +1,58 @@
+name: 🚀 .NET Core API CI/CD
+
+on:
+  push:
+    branches:
+      - main # Triggers on code push to the main branch
+
+env:
+  AZURE_WEBAPP_NAME: my-unique-dotnet-app  # <<-- REPLACE with your App Service Name
+  DOTNET_VERSION: '8.0.x' 
+  # Path to your main API project file relative to the repository root
+  API_PROJECT_PATH: backend/SocialMedia.Api/SocialMedia.Api.csproj 
+  # Path to your test project file
+  TEST_PROJECT_PATH: backend/SocialMedia.Tests.Api/SocialMedia.Tests.Api.csproj 
+  # Path to the project containing your DbContext
+  DB_CONTEXT_PROJECT: backend/SocialMedia.Data/SocialMedia.Data.csproj 
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4 # 1. Get the code
+
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: 🧪 Run Backend Tests
+      # Runs tests using the path defined in the env variables
+      run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --no-build --verbosity normal
+      # IMPORTANT: If tests fail, the pipeline stops here.
+
+    - name: Build and Publish API Artifact
+      run: dotnet publish ${{ env.API_PROJECT_PATH }} --configuration Release -o ${{ env.DOTNET_ROOT }}/myapp
+      
+    - name: ⚙️ Run EF Core Migrations
+      run: |
+        echo "Starting database migration..."
+        dotnet tool install --global dotnet-ef --version 8.0.0
+        # Use the secure connection string secret to update the Azure SQL DB
+        dotnet ef database update --project ${{ env.DB_CONTEXT_PROJECT }} --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+      env:
+        # Pass the connection string from GitHub Secrets to the run step environment
+        AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+      if: success() && env.AZURE_SQL_CONNECTION_STRING != '' # Ensures this step only runs if previous steps succeeded
+
+    - name: ⬆️ Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        # Authenticates deployment using the Publish Profile secret
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API }}
+        package: ${{ env.DOTNET_ROOT }}/myapp
