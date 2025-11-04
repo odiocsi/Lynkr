@@ -36,11 +36,11 @@ jobs:
       run: dotnet publish ${{ env.API_PROJECT_PATH }} --configuration Release -o ${{ env.DOTNET_ROOT }}/myapp
       
     - name: ⚙️ Run EF Core Migrations
+      working-directory: Backend/backend/Lynkr
       run: |
         echo "Starting database migration..."
         dotnet tool install --global dotnet-ef --version 8.0.0
-        # Use the secure connection string secret to update the Azure SQL DB
-        dotnet ef database update --project ${{ env.DB_CONTEXT_PROJECT }} --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+        dotnet ef database update --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
       env:
         # Pass the connection string from GitHub Secrets to the run step environment
         AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
