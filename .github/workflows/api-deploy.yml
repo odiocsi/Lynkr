@@ -25,7 +25,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      run: dotnet restore Backend/backend/Lynkr.sln
+      run: dotnet restore Backend/backend/backend.sln
 
     - name: 🧪 Run Backend Tests
       # Runs tests using the path defined in the env variables
