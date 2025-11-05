@@ -81,8 +81,6 @@ namespace Lynkr.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActionUserId");
-
                     b.HasIndex("User2Id");
 
                     b.HasIndex("User1Id", "User2Id")
@@ -226,7 +224,7 @@ namespace Lynkr.Migrations
                             CreatedAt = new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "alice@test.com",
                             Name = "Alice Admin",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAo9SgIswydHCf0rAG1qwLb0lg5T7iYwiXB2rsynzgi1wz9IxM0yVckbs5R0Y2uJIg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEN1OI8qcALUn7jknSimhauHxmcNi/xdhgsMWSiEbM7BkHeXq5+fmPWkP9hrKAaozGA==",
                             ProfilePictureUrl = "https://placehold.co/100x100/4CAF50/white?text=A"
                         },
                         new
@@ -235,7 +233,7 @@ namespace Lynkr.Migrations
                             CreatedAt = new DateTimeOffset(new DateTime(2025, 1, 5, 11, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "bob@test.com",
                             Name = "Bob Beta",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKw1pGXMsi4jTHlVXb8uNf8uK1hIX8GA5vLE8SVjb2OQpz/zAhbDm8GaSHFMnDgV3A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECkypLdap8tKFiax6nb64H8ciVpLVKAAu/5lnwLzIMusP/5lz6DWJAPq1eDYNpS6xw==",
                             ProfilePictureUrl = "https://placehold.co/100x100/2196F3/white?text=B"
                         });
                 });
@@ -261,12 +259,6 @@ namespace Lynkr.Migrations
 
             modelBuilder.Entity("Lynkr.Models.Friendship", b =>
                 {
-                    b.HasOne("Lynkr.Models.User", "ActionUser")
-                        .WithMany()
-                        .HasForeignKey("ActionUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Lynkr.Models.User", "User1")
                         .WithMany()
                         .HasForeignKey("User1Id")
@@ -278,8 +270,6 @@ namespace Lynkr.Migrations
                         .HasForeignKey("User2Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("ActionUser");
 
                     b.Navigation("User1");
 

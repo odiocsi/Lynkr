@@ -75,12 +75,6 @@ namespace Lynkr.Migrations
                 {
                     table.PrimaryKey("PK_Friendships", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Friendships_Users_ActionUserId",
-                        column: x => x.ActionUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Friendships_Users_User1Id",
                         column: x => x.User1Id,
                         principalTable: "Users",
@@ -174,8 +168,8 @@ namespace Lynkr.Migrations
                 columns: new[] { "Id", "CreatedAt", "Email", "Name", "PasswordHash", "ProfilePictureUrl" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "alice@test.com", "Alice Admin", "AQAAAAIAAYagAAAAEAo9SgIswydHCf0rAG1qwLb0lg5T7iYwiXB2rsynzgi1wz9IxM0yVckbs5R0Y2uJIg==", "https://placehold.co/100x100/4CAF50/white?text=A" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 1, 5, 11, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "bob@test.com", "Bob Beta", "AQAAAAIAAYagAAAAEKw1pGXMsi4jTHlVXb8uNf8uK1hIX8GA5vLE8SVjb2OQpz/zAhbDm8GaSHFMnDgV3A==", "https://placehold.co/100x100/2196F3/white?text=B" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "alice@test.com", "Alice Admin", "AQAAAAIAAYagAAAAEN1OI8qcALUn7jknSimhauHxmcNi/xdhgsMWSiEbM7BkHeXq5+fmPWkP9hrKAaozGA==", "https://placehold.co/100x100/4CAF50/white?text=A" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 5, 11, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "bob@test.com", "Bob Beta", "AQAAAAIAAYagAAAAECkypLdap8tKFiax6nb64H8ciVpLVKAAu/5lnwLzIMusP/5lz6DWJAPq1eDYNpS6xw==", "https://placehold.co/100x100/2196F3/white?text=B" }
                 });
 
             migrationBuilder.InsertData(
@@ -196,11 +190,6 @@ namespace Lynkr.Migrations
                 name: "IX_Conversations_User2Id",
                 table: "Conversations",
                 column: "User2Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Friendships_ActionUserId",
-                table: "Friendships",
-                column: "ActionUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Friendships_User1Id_User2Id",
