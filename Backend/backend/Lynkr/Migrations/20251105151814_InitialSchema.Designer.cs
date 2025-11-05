@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lynkr.Migrations
 {
     [DbContext(typeof(LynkrDBContext))]
-    [Migration("20251104203051_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251105151814_InitialSchema")]
+    partial class InitialSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,34 +36,23 @@ namespace Lynkr.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("IsGroupChat")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("User1Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("User2Id")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("User1Id");
+
+                    b.HasIndex("User2Id");
+
                     b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("Lynkr.Models.ConversationParticipant", b =>
-                {
-                    b.Property<int>("ConversationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("JoinedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("ConversationId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ConversationParticipants");
                 });
 
             modelBuilder.Entity("Lynkr.Models.Friendship", b =>
@@ -240,7 +229,7 @@ namespace Lynkr.Migrations
                             CreatedAt = new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "alice@test.com",
                             Name = "Alice Admin",
-                            PasswordHash = "AQAAAAIAAYagAAAAENSzeCWBpXhhrwzCcVC8RTkAC2Pv08VmgKHx2bt1J5KWhN30rGun8uECeeETKaFT6w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAo9SgIswydHCf0rAG1qwLb0lg5T7iYwiXB2rsynzgi1wz9IxM0yVckbs5R0Y2uJIg==",
                             ProfilePictureUrl = "https://placehold.co/100x100/4CAF50/white?text=A"
                         },
                         new
@@ -249,28 +238,28 @@ namespace Lynkr.Migrations
                             CreatedAt = new DateTimeOffset(new DateTime(2025, 1, 5, 11, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "bob@test.com",
                             Name = "Bob Beta",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMK53ZwAYU3soRH4E/xmVN31FkPjHKAqoGXBez1yGfp1iWwpCctAkR5grZgt8D+wdg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKw1pGXMsi4jTHlVXb8uNf8uK1hIX8GA5vLE8SVjb2OQpz/zAhbDm8GaSHFMnDgV3A==",
                             ProfilePictureUrl = "https://placehold.co/100x100/2196F3/white?text=B"
                         });
                 });
 
-            modelBuilder.Entity("Lynkr.Models.ConversationParticipant", b =>
+            modelBuilder.Entity("Lynkr.Models.Conversation", b =>
                 {
-                    b.HasOne("Lynkr.Models.Conversation", "Conversation")
-                        .WithMany("Participants")
-                        .HasForeignKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Lynkr.Models.User", "User")
+                    b.HasOne("Lynkr.Models.User", "User1")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Conversation");
+                    b.HasOne("Lynkr.Models.User", "User2")
+                        .WithMany()
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
                 });
 
             modelBuilder.Entity("Lynkr.Models.Friendship", b =>
@@ -278,7 +267,7 @@ namespace Lynkr.Migrations
                     b.HasOne("Lynkr.Models.User", "ActionUser")
                         .WithMany()
                         .HasForeignKey("ActionUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Lynkr.Models.User", "User1")
@@ -352,8 +341,6 @@ namespace Lynkr.Migrations
             modelBuilder.Entity("Lynkr.Models.Conversation", b =>
                 {
                     b.Navigation("Messages");
-
-                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("Lynkr.Models.Post", b =>

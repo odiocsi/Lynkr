@@ -18,7 +18,6 @@ namespace Lynkr.Data
         public DbSet<Like> Likes { get; set; }
         public DbSet<Friendship> Friendships { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
-        public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
         public DbSet<Message> Messages { get; set; }
 
         // This method is used to configure relationships, keys, constraints, and seed data
@@ -68,44 +67,37 @@ namespace Lynkr.Data
                 .HasForeignKey(f => f.User2Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // ActionUser Foreign Key setup
-            modelBuilder.Entity<Friendship>()
-                .HasOne(f => f.ActionUser)
-                .WithMany()
-                .HasForeignKey(f => f.ActionUserId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // --- CONVERSATION/CHAT CONFIGURATION ---
 
-            // Define the Composite Key for the junction table
-            modelBuilder.Entity<ConversationParticipant>()
-                .HasKey(cp => new { cp.ConversationId, cp.UserId });
-
-            // Link Participant to Conversation
-            modelBuilder.Entity<ConversationParticipant>()
-                .HasOne(cp => cp.Conversation)
-                .WithMany(c => c.Participants)
-                .HasForeignKey(cp => cp.ConversationId);
-
-            // Link Participant to User
-            modelBuilder.Entity<ConversationParticipant>()
-                .HasOne(cp => cp.User)
-                .WithMany()
-                .HasForeignKey(cp => cp.UserId);
-
-            // --- MESSAGE CONFIGURATION ---
-
-            // Link Message to Conversation
+            // Link Message to Conversation (One Conversation has Many Messages)
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.Conversation)
-                .WithMany(c => c.Messages)
+                .WithMany(c => c.Messages) // <-- Ehhez a Conversation modellben vissza kell adnod az ICollection<Message> Messages-t
                 .HasForeignKey(m => m.ConversationId);
 
-            // Link Message to Sender
+            // Link Message to Sender (One User is Many Senders)
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.Sender)
                 .WithMany()
                 .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            // --- ÚJ Conversation Konfiguráció (1:1 Chat) ---
+
+            // Konfiguráció User1-hez
+            modelBuilder.Entity<Conversation>()
+                .HasOne(c => c.User1)
+                .WithMany()
+                .HasForeignKey("User1Id") // Feltételezve, hogy hozzáadtad a User1Id FK-t a modellhez
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Konfiguráció User2-höz
+            modelBuilder.Entity<Conversation>()
+                .HasOne(c => c.User2)
+                .WithMany()
+                .HasForeignKey("User2Id") // Feltételezve, hogy hozzáadtad a User2Id FK-t a modellhez
                 .OnDelete(DeleteBehavior.Restrict);
 
             // --- DATA SEEDING (HasData) ---

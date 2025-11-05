@@ -8,26 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Lynkr.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Conversations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsGroupChat = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Conversations", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -46,28 +31,31 @@ namespace Lynkr.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ConversationParticipants",
+                name: "Conversations",
                 columns: table => new
                 {
-                    ConversationId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    JoinedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    User1Id = table.Column<int>(type: "int", nullable: false),
+                    User2Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ConversationParticipants", x => new { x.ConversationId, x.UserId });
+                    table.PrimaryKey("PK_Conversations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ConversationParticipants_Conversations_ConversationId",
-                        column: x => x.ConversationId,
-                        principalTable: "Conversations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ConversationParticipants_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Conversations_Users_User1Id",
+                        column: x => x.User1Id,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Conversations_Users_User2Id",
+                        column: x => x.User2Id,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,7 +79,7 @@ namespace Lynkr.Migrations
                         column: x => x.ActionUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Friendships_Users_User1Id",
                         column: x => x.User1Id,
@@ -104,6 +92,28 @@ namespace Lynkr.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Posts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Posts_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -132,28 +142,6 @@ namespace Lynkr.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Posts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Posts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Posts_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,8 +174,8 @@ namespace Lynkr.Migrations
                 columns: new[] { "Id", "CreatedAt", "Email", "Name", "PasswordHash", "ProfilePictureUrl" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "alice@test.com", "Alice Admin", "AQAAAAIAAYagAAAAENSzeCWBpXhhrwzCcVC8RTkAC2Pv08VmgKHx2bt1J5KWhN30rGun8uECeeETKaFT6w==", "https://placehold.co/100x100/4CAF50/white?text=A" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 1, 5, 11, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "bob@test.com", "Bob Beta", "AQAAAAIAAYagAAAAEMK53ZwAYU3soRH4E/xmVN31FkPjHKAqoGXBez1yGfp1iWwpCctAkR5grZgt8D+wdg==", "https://placehold.co/100x100/2196F3/white?text=B" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "alice@test.com", "Alice Admin", "AQAAAAIAAYagAAAAEAo9SgIswydHCf0rAG1qwLb0lg5T7iYwiXB2rsynzgi1wz9IxM0yVckbs5R0Y2uJIg==", "https://placehold.co/100x100/4CAF50/white?text=A" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 5, 11, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "bob@test.com", "Bob Beta", "AQAAAAIAAYagAAAAEKw1pGXMsi4jTHlVXb8uNf8uK1hIX8GA5vLE8SVjb2OQpz/zAhbDm8GaSHFMnDgV3A==", "https://placehold.co/100x100/2196F3/white?text=B" }
                 });
 
             migrationBuilder.InsertData(
@@ -200,9 +188,14 @@ namespace Lynkr.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConversationParticipants_UserId",
-                table: "ConversationParticipants",
-                column: "UserId");
+                name: "IX_Conversations_User1Id",
+                table: "Conversations",
+                column: "User1Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Conversations_User2Id",
+                table: "Conversations",
+                column: "User2Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Friendships_ActionUserId",
@@ -250,9 +243,6 @@ namespace Lynkr.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ConversationParticipants");
-
             migrationBuilder.DropTable(
                 name: "Friendships");
 
