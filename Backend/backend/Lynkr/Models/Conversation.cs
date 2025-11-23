@@ -4,9 +4,6 @@
     {
         public int Id { get; set; } // Primary Key
 
-        // Used primarily for Group Chats (e.g., "The Dev Team")
-        public string Name { get; set; }
-
         public DateTimeOffset CreatedAt { get; set; }
 
         // Navigation Properties
