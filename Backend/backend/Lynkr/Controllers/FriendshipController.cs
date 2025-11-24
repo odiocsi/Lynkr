@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization; 
+using System.Security.Claims; 
 using Lynkr.Data;
 using Lynkr.Models;
 
@@ -7,6 +9,7 @@ namespace Lynkr.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] 
     public class FriendshipController : ControllerBase
     {
         private readonly LynkrDBContext _context;
@@ -19,10 +22,12 @@ namespace Lynkr.Controllers
             _context = context;
         }
 
-        // GET: api/friendship/list/{userId}
-        [HttpGet("list/{userId}")]
-        public async Task<IActionResult> GetFriendsList(int userId)
+        // GET: api/friendship/list
+        [HttpGet("list")]
+        public async Task<IActionResult> GetFriendsList()
         {
+            var userId = GetCurrentUserId(); 
+
             var friends = await _context.Friendships
                 .AsNoTracking()
                 .Where(f => (f.User1Id == userId || f.User2Id == userId) && f.Status == STATUS_ACCEPTED)
@@ -40,10 +45,12 @@ namespace Lynkr.Controllers
             return Ok(friends);
         }
 
-        // GET: api/friendship/pending/{userId}
-        [HttpGet("pending/{userId}")]
-        public async Task<IActionResult> GetPendingRequests(int userId)
+        // GET: api/friendship/pending
+        [HttpGet("pending")]
+        public async Task<IActionResult> GetPendingRequests()
         {
+            var userId = GetCurrentUserId(); 
+
             var requests = await _context.Friendships
                 .AsNoTracking()
                 .Where(f =>
@@ -56,6 +63,7 @@ namespace Lynkr.Controllers
                 .Select(f => new
                 {
                     RequesterId = f.ActionUserId,
+  
                     RequesterName = f.User1Id == userId ? f.User2.Name : f.User1.Name,
                     RequesterPic = f.User1Id == userId ? f.User2.ProfilePictureUrl : f.User1.ProfilePictureUrl,
                     SentAt = f.CreatedAt
@@ -69,15 +77,17 @@ namespace Lynkr.Controllers
         [HttpPost("request")]
         public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequestDto requestDto)
         {
-            if (requestDto.CurrentUserId == requestDto.TargetUserId)
+            var currentUserId = GetCurrentUserId(); 
+
+            if (currentUserId == requestDto.TargetUserId)
             {
                 return BadRequest("You cannot add yourself.");
             }
 
             var existing = await _context.Friendships
                 .FirstOrDefaultAsync(f =>
-                    (f.User1Id == requestDto.CurrentUserId && f.User2Id == requestDto.TargetUserId) ||
-                    (f.User1Id == requestDto.TargetUserId && f.User2Id == requestDto.CurrentUserId));
+                    (f.User1Id == currentUserId && f.User2Id == requestDto.TargetUserId) ||
+                    (f.User1Id == requestDto.TargetUserId && f.User2Id == currentUserId));
 
             if (existing != null)
             {
@@ -87,10 +97,10 @@ namespace Lynkr.Controllers
 
             var friendship = new Friendship
             {
-                User1Id = requestDto.CurrentUserId,
+                User1Id = currentUserId,
                 User2Id = requestDto.TargetUserId,
                 Status = STATUS_PENDING,
-                ActionUserId = requestDto.CurrentUserId,
+                ActionUserId = currentUserId, 
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
@@ -104,22 +114,24 @@ namespace Lynkr.Controllers
         [HttpPut("accept")]
         public async Task<IActionResult> AcceptRequest([FromBody] FriendAcceptDto acceptDto)
         {
+            var currentUserId = GetCurrentUserId(); 
+
             var friendship = await _context.Friendships
                 .FirstOrDefaultAsync(f =>
-                    (f.User1Id == acceptDto.CurrentUserId && f.User2Id == acceptDto.RequesterId) ||
-                    (f.User1Id == acceptDto.RequesterId && f.User2Id == acceptDto.CurrentUserId));
+                    (f.User1Id == currentUserId && f.User2Id == acceptDto.RequesterId) ||
+                    (f.User1Id == acceptDto.RequesterId && f.User2Id == currentUserId));
 
             if (friendship == null) return NotFound("Request not found.");
 
-            if (friendship.Status == STATUS_ACCEPTED) return BadRequest("Already friends.");
-
-            if (friendship.ActionUserId == acceptDto.CurrentUserId)
+            if (friendship.ActionUserId == currentUserId)
             {
                 return BadRequest("You cannot accept your own request.");
             }
 
+            if (friendship.Status == STATUS_ACCEPTED) return BadRequest("Already friends.");
+
             friendship.Status = STATUS_ACCEPTED;
-            friendship.ActionUserId = acceptDto.CurrentUserId; 
+            friendship.ActionUserId = currentUserId;
             friendship.UpdatedAt = DateTimeOffset.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -127,14 +139,16 @@ namespace Lynkr.Controllers
             return Ok("Friend request accepted.");
         }
 
-        // DELETE: api/friendship/delete/{currentUserId}/{otherUserId}
-        [HttpDelete("delete/{currentUserId}/{otherUserId}")]
+        // DELETE: api/friendship/delete
+        [HttpDelete("delete")]
         public async Task<IActionResult> RemoveFriend([FromBody] FriendDeleteDto deleteDto)
         {
+            var currentUserId = GetCurrentUserId(); 
+
             var friendship = await _context.Friendships
                 .FirstOrDefaultAsync(f =>
-                    (f.User1Id == deleteDto.CurrentUserId && f.User2Id == deleteDto.OtherUserId) ||
-                    (f.User1Id == deleteDto.OtherUserId && f.User2Id == deleteDto.CurrentUserId));
+                    (f.User1Id == currentUserId && f.User2Id == deleteDto.OtherUserId) ||
+                    (f.User1Id == deleteDto.OtherUserId && f.User2Id == currentUserId));
 
             if (friendship == null)
             {
@@ -146,28 +160,32 @@ namespace Lynkr.Controllers
 
             return NoContent();
         }
+
+        // --- HELPER ---
+        private int GetCurrentUserId()
+        {
+            var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(idClaim)) throw new UnauthorizedAccessException("User ID not found in token.");
+            return int.Parse(idClaim);
+        }
     }
 }
 
 // --- DTOs ---
-
 namespace Lynkr.Models
 {
     public class FriendRequestDto
     {
-        public int CurrentUserId { get; set; }
         public int TargetUserId { get; set; }
     }
 
     public class FriendDeleteDto
     {
-        public int CurrentUserId { get; set; }
         public int OtherUserId { get; set; }
     }
 
     public class FriendAcceptDto
     {
-        public int CurrentUserId { get; set; }
         public int RequesterId { get; set; }
     }
 }

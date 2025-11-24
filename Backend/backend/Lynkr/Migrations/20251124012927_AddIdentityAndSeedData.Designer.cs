@@ -4,6 +4,7 @@ using Lynkr.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lynkr.Migrations
 {
     [DbContext(typeof(LynkrDBContext))]
-    partial class LynkrDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251124012927_AddIdentityAndSeedData")]
+    partial class AddIdentityAndSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,9 +92,9 @@ namespace Lynkr.Migrations
                         {
                             Id = 1,
                             ActionUserId = 1,
-                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 21, 1, 45, 16, 498, DateTimeKind.Unspecified).AddTicks(5908), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 21, 1, 29, 26, 892, DateTimeKind.Unspecified).AddTicks(5143), new TimeSpan(0, 0, 0, 0, 0)),
                             Status = "ACCEPTED",
-                            UpdatedAt = new DateTimeOffset(new DateTime(2025, 11, 21, 1, 45, 16, 498, DateTimeKind.Unspecified).AddTicks(6050), new TimeSpan(0, 0, 0, 0, 0)),
+                            UpdatedAt = new DateTimeOffset(new DateTime(2025, 11, 21, 1, 29, 26, 892, DateTimeKind.Unspecified).AddTicks(5292), new TimeSpan(0, 0, 0, 0, 0)),
                             User1Id = 1,
                             User2Id = 2
                         },
@@ -99,7 +102,7 @@ namespace Lynkr.Migrations
                         {
                             Id = 2,
                             ActionUserId = 2,
-                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 24, 0, 45, 16, 498, DateTimeKind.Unspecified).AddTicks(6417), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 24, 0, 29, 26, 892, DateTimeKind.Unspecified).AddTicks(5678), new TimeSpan(0, 0, 0, 0, 0)),
                             Status = "PENDING",
                             User1Id = 2,
                             User2Id = 3
@@ -187,7 +190,7 @@ namespace Lynkr.Migrations
                         {
                             Id = 1,
                             Content = "First post from Alice!",
-                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 19, 1, 45, 16, 498, DateTimeKind.Unspecified).AddTicks(4819), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 19, 1, 29, 26, 892, DateTimeKind.Unspecified).AddTicks(4023), new TimeSpan(0, 0, 0, 0, 0)),
                             ImageUrl = "https://placehold.co/600x400/4CAF50/white?text=Alice+Post",
                             UserId = 1
                         },
@@ -195,7 +198,7 @@ namespace Lynkr.Migrations
                         {
                             Id = 2,
                             Content = "Bob checking in with a new post.",
-                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 22, 1, 45, 16, 498, DateTimeKind.Unspecified).AddTicks(5183), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 22, 1, 29, 26, 892, DateTimeKind.Unspecified).AddTicks(4412), new TimeSpan(0, 0, 0, 0, 0)),
                             ImageUrl = "https://placehold.co/600x400/2196F3/white?text=Bob+Post",
                             UserId = 2
                         });
@@ -213,15 +216,13 @@ namespace Lynkr.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
@@ -237,12 +238,10 @@ namespace Lynkr.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -263,38 +262,29 @@ namespace Lynkr.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("User");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7a72c8bb-5252-48b2-848c-481c7b48863c",
-                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 14, 1, 45, 16, 373, DateTimeKind.Unspecified).AddTicks(9160), new TimeSpan(0, 0, 0, 0, 0)),
+                            ConcurrencyStamp = "c26d504f-d046-42b2-8cf9-e9342a181720",
+                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 14, 1, 29, 26, 759, DateTimeKind.Unspecified).AddTicks(2430), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "alice@test.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "Alice Admin",
                             NormalizedEmail = "ALICE@TEST.COM",
                             NormalizedUserName = "ALICE@TEST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBHRqTCwqTKYZM9+JL9NUxQATgkLZberriDg1osqjdyV7DqNZxBvXLhJI3Kjxo+qxQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEMGXvBf4iZJWSduXdYtglIHF+knyOhbj21m/VcyIUM2jWzG1covyMnHwPMWXJ78ww==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://placehold.co/100x100/4CAF50/white?text=A",
-                            SecurityStamp = "7dab6c15-e2eb-4cfe-b1e3-6480319f4a53",
+                            SecurityStamp = "da3089f9-8fa8-42f0-b457-1389196f7a83",
                             TwoFactorEnabled = false,
                             UserName = "alice@test.com"
                         },
@@ -302,18 +292,18 @@ namespace Lynkr.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "265a8e88-dd9c-4cac-993a-d8a38c9a0569",
-                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 19, 1, 45, 16, 416, DateTimeKind.Unspecified).AddTicks(5209), new TimeSpan(0, 0, 0, 0, 0)),
+                            ConcurrencyStamp = "ca71dcd6-3b6e-45e9-9846-812a6f9a70f5",
+                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 19, 1, 29, 26, 805, DateTimeKind.Unspecified).AddTicks(3285), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "bob@test.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "Bob Beta",
                             NormalizedEmail = "BOB@TEST.COM",
                             NormalizedUserName = "BOB@TEST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMjM/2wtpMqJRYuQaX6v1StilKB4d5PR70txLGBrhAQL0vYSjhPDoe97tcB+G7Xyyw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPsfLg67AwkS3HcQhLlsiymzzKBfKyHgAVASpF30xUJe+URckWwr446K0KfzntwNUA==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://placehold.co/100x100/2196F3/white?text=B",
-                            SecurityStamp = "c5d7b05d-fd07-4345-93f3-6fa664c32746",
+                            SecurityStamp = "baabe55c-1d4b-4905-80a2-48aadd4a75c3",
                             TwoFactorEnabled = false,
                             UserName = "bob@test.com"
                         },
@@ -321,154 +311,21 @@ namespace Lynkr.Migrations
                         {
                             Id = 3,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c98240fa-997f-4f65-acab-11dadc1563b2",
-                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 22, 1, 45, 16, 457, DateTimeKind.Unspecified).AddTicks(4995), new TimeSpan(0, 0, 0, 0, 0)),
+                            ConcurrencyStamp = "8f311642-bc43-4cfe-9ae8-da6d2833b5f6",
+                            CreatedAt = new DateTimeOffset(new DateTime(2025, 11, 22, 1, 29, 26, 849, DateTimeKind.Unspecified).AddTicks(216), new TimeSpan(0, 0, 0, 0, 0)),
                             Email = "charlie@test.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             Name = "Charlie Chat",
                             NormalizedEmail = "CHARLIE@TEST.COM",
                             NormalizedUserName = "CHARLIE@TEST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDFKHrPaNZzo0HfPtEMjk1pKlnr8iytH46BdfQqY0p+JxTOPU8xCPWKlSDA23lCuig==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEqTog4WoAjBPuSeVHkFIkEkn9DG3A7KyXPb06tZI7qhhcOzPdyGs3MGE0pKKxKqNQ==",
                             PhoneNumberConfirmed = false,
                             ProfilePictureUrl = "https://placehold.co/100x100/FF9800/white?text=C",
-                            SecurityStamp = "56d6814a-fd0f-4b0f-9ab6-d5db73b4c8bb",
+                            SecurityStamp = "da23659c-6134-4107-8e9e-e2e1367fbe2c",
                             TwoFactorEnabled = false,
                             UserName = "charlie@test.com"
                         });
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Lynkr.Models.Conversation", b =>
@@ -556,57 +413,6 @@ namespace Lynkr.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
-                {
-                    b.HasOne("Lynkr.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
-                {
-                    b.HasOne("Lynkr.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Lynkr.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
-                {
-                    b.HasOne("Lynkr.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Lynkr.Models.Conversation", b =>

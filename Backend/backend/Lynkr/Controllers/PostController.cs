@@ -1,107 +1,127 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization; 
+using System.Security.Claims;
 using Lynkr.Data;
 using Lynkr.Models;
-[Route("api/[controller]")]
-[ApiController]
-public class PostController : ControllerBase
+
+namespace Lynkr.Controllers
 {
-    private readonly LynkrDBContext _context;
-
-    public PostController(LynkrDBContext context)
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize] 
+    public class PostController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly LynkrDBContext _context;
 
-    // GET: api/post/{id}
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetPost(int id)
-    {
-        var post = await _context.Posts
-            .Include(p => p.User)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        if (post == null)
+        public PostController(LynkrDBContext context)
         {
-            return NotFound($"Post with ID {id} not found.");
+            _context = context;
         }
 
-        return Ok(new
+        // GET: api/post/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPost(int id)
         {
-            post.Id,
-            post.Content,
-            post.CreatedAt,
-            AuthorName = post.User.Name,
-            AuthorProfilePic = post.User.ProfilePictureUrl
-        });
-    }
+            var post = await _context.Posts
+                .Include(p => p.User)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-    // GET: api/post/feed/{userId}
-    [HttpGet("feed/{userId}")]
-    public async Task<IActionResult> GetFriendsFeed(int userId)
-    {
-        var feedPosts = await _context.Posts
-            .Include(p => p.User)
-            .Where(post => _context.Friendships.Any(f =>
-                (f.User1Id == userId && f.User2Id == post.UserId) ||
-                (f.User2Id == userId && f.User1Id == post.UserId)
-            ))
-            .OrderByDescending(p => p.CreatedAt)
-            .AsNoTracking()
-            .Select(post => new
+            if (post == null) return NotFound($"Post with ID {id} not found.");
+
+
+            return Ok(new
             {
                 post.Id,
                 post.Content,
                 post.CreatedAt,
-                AuthorId = post.UserId,
                 AuthorName = post.User.Name,
-                AuthorProfilePic = post.User.ProfilePictureUrl,
-                IsLikedByCurrentUser = post.Likes.Any(l => l.UserId == userId)
-            })
-            .ToListAsync();
-
-        return Ok(feedPosts);
-    }
-
-    // POST: api/post
-    [HttpPost]
-    public async Task<IActionResult> CreatePost([FromBody] PostCreateDto postDto)
-    {
-        int currentUserId = 1;
-
-        var newPost = new Post
-        {
-            UserId = currentUserId,
-            Content = postDto.Content,
-            CreatedAt = DateTimeOffset.UtcNow,
-            // ImageUrl = postDto.ImageUrl 
-        };
-
-        _context.Posts.Add(newPost);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetPost), new { id = newPost.Id }, newPost);
-    }
-
-    // DELETE: api/post/{id}
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePost(int id)
-    {
-        var post = await _context.Posts.FindAsync(id);
-
-        if (post == null)
-        {
-            return NotFound($"Post with ID {id} not found.");
+                AuthorProfilePic = post.User.ProfilePictureUrl
+            });
         }
-        _context.Posts.Remove(post);
 
-        await _context.SaveChangesAsync();
-     
-        return NoContent();  
+        // GET: api/post/feed
+        [HttpGet("feed")]
+        public async Task<IActionResult> GetFriendsFeed()
+        {
+            var currentUserId = GetCurrentUserId();
+
+            var feedPosts = await _context.Posts
+                .Include(p => p.User)
+                .Where(post => _context.Friendships.Any(f =>
+                    (f.User1Id == currentUserId && f.User2Id == post.UserId) ||
+                    (f.User2Id == currentUserId && f.User1Id == post.UserId)
+                ))
+                .OrderByDescending(p => p.CreatedAt)
+                .AsNoTracking()
+                .Select(post => new
+                {
+                    post.Id,
+                    post.Content,
+                    post.CreatedAt,
+                    AuthorId = post.UserId,
+                    AuthorName = post.User.Name,
+                    AuthorProfilePic = post.User.ProfilePictureUrl,
+                    IsLikedByCurrentUser = post.Likes.Any(l => l.UserId == currentUserId)
+                })
+                .ToListAsync();
+
+            return Ok(feedPosts);
+        }
+
+        // POST: api/post
+        [HttpPost]
+        public async Task<IActionResult> CreatePost([FromBody] PostCreateDto postDto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var currentUserId = GetCurrentUserId();
+
+            var newPost = new Post
+            {
+                UserId = currentUserId,
+                Content = postDto.Content,
+                CreatedAt = DateTimeOffset.UtcNow,
+                ImageUrl = postDto.ImageUrl 
+            };
+
+            _context.Posts.Add(newPost);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetPost), new { id = newPost.Id }, newPost);
+        }
+
+        // DELETE: api/post/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePost(int id)
+        {
+            var currentUserId = GetCurrentUserId();
+
+            var post = await _context.Posts.FindAsync(id);
+
+            if (post == null) return NotFound("Post not found.");
+
+            if (post.UserId != currentUserId)
+            {
+                return Unauthorized("You are not authorized to delete this post.");
+            }
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // --- HELPER ---
+        private int GetCurrentUserId()
+        {
+            var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(idClaim)) throw new UnauthorizedAccessException("User ID not found in token.");
+            return int.Parse(idClaim);
+        }
     }
 }
-
 // --- DTOs ---
 
 namespace Lynkr.Models
