@@ -1,0 +1,85 @@
+/* Ensure html and body take full height and remove default margins */
+html, body {
+  height: 100%;
+  overflow: hidden; /* Prevent scrollbars if only login is on page */
+}
+
+.full-screen-center {
+  height:100vh;
+}
+
+/* Style for the main login form container (white box with border) */
+.login-card-minimal {
+  max-width: 400px; /* Adjust as needed */
+  background-color: #fff;
+  padding: 48px 40px; /* More vertical padding for spacing */
+  border: 1px solid #e8e8e8; /* Light gray border */
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Subtle shadow */
+  text-align: center; /* Center content like title, inputs, button */
+}
+
+/* Adjust title style */
+.login-title {
+  font-size: 30px; /* Larger font size */
+  font-weight: 500;
+  margin-bottom: 50px; /* More space below title */
+  color: #222;
+}
+
+/* Custom style for the underline input */
+.underline-input.ant-input {
+  border: none; /* Remove default NG-ZORRO border */
+  border-bottom: 1px solid #d9d9d9; /* Add bottom border */
+  border-radius: 0; /* Remove border radius */
+  box-shadow: none !important; /* Remove box shadow on focus */
+  padding: 8px 0; /* Adjust padding */
+  text-align: center; /* Center the input text */
+  font-size: 16px;
+  color: #222;
+}
+
+.underline-input.ant-input::placeholder {
+  color: #bfbfbf; /* Placeholder color, slightly darker gray */
+}
+
+/* NG-ZORRO adds some default margin to form items, reduce it for tighter spacing */
+.ant-form-item {
+  margin-bottom: 30px !important; /* More space between inputs and button */
+}
+
+/* Specific adjustment for password input to match image spacing */
+.password-form-item {
+  margin-bottom: 50px !important;
+}
+
+
+/* Style for the login button */
+.login-button-minimal.ant-btn-primary {
+  width: 100%; /* Make button full width of form */
+  height: 48px; /* Taller button */
+  font-size: 18px; /* Larger font for button text */
+  border-color: #1890ff; /* Blue border for the button (Ant Design primary color) */
+  background-color: transparent; /* Transparent background */
+  color: #1890ff; /* Blue text */
+  box-shadow: none; /* Remove default shadow */
+  border-width: 2px; /* Thicker border */
+}
+
+.login-button-minimal.ant-btn-primary:hover,
+.login-button-minimal.ant-btn-primary:focus {
+  background-color: #e6f7ff; /* Light blue background on hover/focus */
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.login-button-minimal.ant-btn-primary[disabled],
+.login-button-minimal.ant-btn-primary[disabled]:hover {
+  background-color: transparent;
+  border-color: #d9d9d9;
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.register-link{
+  text-align: left !important;
+}
