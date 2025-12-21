@@ -106,6 +106,8 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -126,5 +128,6 @@ app.UseAuthentication();
 app.UseAuthorization();  
 
 app.MapControllers();
+app.MapHub<Lynkr.Hubs.ChatHub>("/chatHub");
 
 app.Run();

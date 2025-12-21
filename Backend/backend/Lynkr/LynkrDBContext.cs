@@ -74,13 +74,13 @@ namespace Lynkr.Data
             modelBuilder.Entity<Conversation>()
                 .HasOne(c => c.User1)
                 .WithMany()
-                .HasForeignKey("User1Id")
+                .HasForeignKey(c => c.User1Id) 
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Conversation>()
                 .HasOne(c => c.User2)
                 .WithMany()
-                .HasForeignKey("User2Id")
+                .HasForeignKey(c => c.User2Id) 
                 .OnDelete(DeleteBehavior.Restrict);
 
             // --- SEEDING ---
@@ -99,6 +99,20 @@ namespace Lynkr.Data
             modelBuilder.Entity<Friendship>().HasData(
                 InitialData.FriendshipAliceBob,
                 InitialData.FriendshipBobCharlie
+            );
+
+            modelBuilder.Entity<Conversation>().HasData(
+                InitialData.ConversationAliceBob,
+                InitialData.ConversationAliceCharlie
+            );
+
+            modelBuilder.Entity<Message>().HasData(
+                InitialData.MsgAliceBob1,
+                InitialData.MsgAliceBob2,
+                InitialData.MsgAliceBob3,
+                InitialData.MsgAliceBob4,
+                InitialData.MsgAliceCharlie1,
+                InitialData.MsgAliceCharlie2
             );
         }
 

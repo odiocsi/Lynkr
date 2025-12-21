@@ -76,6 +76,78 @@ namespace Lynkr.Seeder
             CreatedAt = DateTimeOffset.UtcNow.AddHours(-1)
         };
 
+        // --- CONVERSATIONS ---
+        public static readonly Conversation ConversationAliceBob = new()
+        {
+            Id = 1,
+            User1Id = 1, // Alice
+            User2Id = 2, // Bob
+            CreatedAt = DateTimeOffset.UtcNow.AddDays(-4)
+        };
+
+        public static readonly Conversation ConversationAliceCharlie = new()
+        {
+            Id = 2,
+            User1Id = 1, // Alice
+            User2Id = 3, // Charlie
+            CreatedAt = DateTimeOffset.UtcNow.AddHours(-2)
+        };
+
+        // --- MESSAGES ---
+        public static readonly Message MsgAliceBob1 = new()
+        {
+            Id = 1,
+            ConversationId = 1,
+            SenderId = 1, // Alice
+            Content = "Szia Bob! Láttad a tegnapi meccset?",
+            SentAt = DateTimeOffset.UtcNow.AddDays(-4).AddHours(10)
+        };
+
+        public static readonly Message MsgAliceBob2 = new()
+        {
+            Id = 2,
+            ConversationId = 1,
+            SenderId = 2, // Bob
+            Content = "Szia! Persze, elképesztő volt a vége.",
+            SentAt = DateTimeOffset.UtcNow.AddDays(-4).AddHours(10).AddMinutes(5)
+        };
+
+        public static readonly Message MsgAliceBob3 = new()
+        {
+            Id = 3,
+            ConversationId = 1,
+            SenderId = 1, // Alice
+            Content = "Hihetetlen, hogy megfordították. Mikor érsz rá egy kávéra?",
+            SentAt = DateTimeOffset.UtcNow.AddDays(-3).AddHours(9) // Másnap
+        };
+
+        public static readonly Message MsgAliceBob4 = new()
+        {
+            Id = 4,
+            ConversationId = 1,
+            SenderId = 2, // Bob
+            Content = "Holnap délután jó lehet. 4 körül?",
+            SentAt = DateTimeOffset.UtcNow.AddDays(-3).AddHours(9).AddMinutes(30)
+        };
+
+        public static readonly Message MsgAliceCharlie1 = new()
+        {
+            Id = 5,
+            ConversationId = 2,
+            SenderId = 3, // Charlie
+            Content = "Helló Alice! Láttam a posztodat, nagyon jó lett a kép.",
+            SentAt = DateTimeOffset.UtcNow.AddHours(-2)
+        };
+
+        public static readonly Message MsgAliceCharlie2 = new()
+        {
+            Id = 6,
+            ConversationId = 2,
+            SenderId = 1, // Alice
+            Content = "Köszi Charlie! :)",
+            SentAt = DateTimeOffset.UtcNow.AddHours(-1).AddMinutes(55)
+        };
+
         // --- HELPER ---
         private static User CreateUser(int id, string email, string name, string password, string picUrl, int createdDaysAgo)
         {
