@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Lynkr.Models;
+using Microsoft.AspNetCore.Authorization; 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Authorization; 
-using Lynkr.Models;
 
 namespace Lynkr.Controllers
 {
@@ -21,6 +22,54 @@ namespace Lynkr.Controllers
         {
             _userManager = userManager;
             _configuration = configuration;
+        }
+
+        // GET: api/user/me
+        [HttpGet("me")]
+        public async Task<IActionResult> Me()
+        {
+            var currentUserId = GetCurrentUserId();
+            var user = await _userManager.FindByIdAsync(currentUserId.ToString());
+
+            if (user is null) return Unauthorized("No user logged in.");
+
+            return Ok(new
+            {
+                userId = user.Id,
+                name = user.Name,
+                profilePictureUrl = user.ProfilePictureUrl
+            });
+        }
+
+        // GET: api/user/search?query=abc
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchUsers([FromQuery] string query)
+        {
+            var currentUserId = GetCurrentUserId();
+
+            if (string.IsNullOrWhiteSpace(query))
+                return Ok(Array.Empty<object>());
+
+            query = query.Trim();
+
+            // Simple "contains" search on Name and Email
+            var users = await _userManager.Users
+                .AsNoTracking()
+                .Where(u =>
+                    (u.Name != null && u.Name.Contains(query) && u.Id != currentUserId)
+                )
+                .OrderBy(u => u.Name)
+                .Select(u => new
+                {
+                    id = u.Id,
+                    name = u.Name,
+                    email = u.Email,
+                    profilePictureUrl = u.ProfilePictureUrl
+                })
+                .Take(20)
+                .ToListAsync();
+
+            return Ok(users);
         }
 
         // POST: api/user/register
@@ -89,7 +138,8 @@ namespace Lynkr.Controllers
 
             var result = await _userManager.UpdateAsync(user);
 
-            if (result.Succeeded) return Ok("Profile updated successfully");
+            if (result.Succeeded)
+                return Ok(new { message = "Profile updated successfully!" }); ;
 
             return BadRequest(result.Errors);
         }

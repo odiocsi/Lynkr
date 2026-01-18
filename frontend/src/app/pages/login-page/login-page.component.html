@@ -1,0 +1,28 @@
+<nz-flex class="full-screen-center" nzJustify="center" nzAlign="center">
+
+  <form nz-form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-card-minimal">
+
+    <h2 class="login-title">Sign In</h2>
+
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Please input your e-mail!">
+        <input class="underline-input" type="email" nz-input formControlName="email" placeholder="e-mail" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="password-form-item">
+      <nz-form-control nzErrorTip="Please input your Password!">
+        <input class="underline-input" type="password" nz-input formControlName="password" placeholder="Password" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <button nz-button nzType="primary" class="login-button-minimal" [disabled]="loginForm.invalid">
+      Sign In
+    </button>
+
+    <span class="register-link">
+       <a routerLink="/signup"> Register to connect with people!</a>
+    </span>
+  </form>
+
+</nz-flex>

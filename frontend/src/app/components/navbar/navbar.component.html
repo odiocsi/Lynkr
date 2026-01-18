@@ -1,0 +1,26 @@
+<header class="app-navbar">
+  <div class="navbar-container">
+    <div class="app-logo">Lynkr</div>
+
+    <nav class="nav-links">
+      <a class="nav-link" routerLink="/home">Home</a>
+      <a class="nav-link" routerLink="/profile">Profile</a>
+      <a class="nav-link" routerLink="/friends">Friends</a>
+      <!-- <a class="nav-link" routerLink="chats">Chats</a> -->
+    </nav>
+
+    <div class="user-profile" *ngIf="auth.currentUser() as user">
+      <span class="vertical-separator"></span>
+
+      <a class="user-profile" routerLink="profile">
+        <span>{{ user.name }}</span>
+      </a>
+        <img
+        class="avatar-circle"
+        [src]="user.profilePic || 'assets/default-avatar.png'"
+        width="30"
+        />
+        <button (click)="auth.logout()">Logout</button>
+    </div>
+  </div>
+</header>

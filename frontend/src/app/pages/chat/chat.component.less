@@ -1,0 +1,145 @@
+/* Fill available viewport and keep page from growing */
+:host {
+  display: block;
+  height: 100vh;
+  min-height: 0;
+}
+
+.chat-wrapper {
+  height: calc(100vh - 64px);;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Card acts as the chat layout container */
+.chat-card {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make the card body a flex column so the footer can stick */
+.chat-card ::ng-deep .ant-card-body {
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 0; /* we control spacing in child blocks */
+}
+
+/* Scroll area: ONLY this section scrolls */
+.message-container {
+  flex: 1;
+  min-height: 0;            /* critical for flex scrolling */
+  overflow-y: auto;
+
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Remove default list padding/margins so it doesn't fight layout */
+.message-container nz-list,
+.message-container ::ng-deep .ant-list {
+  margin: 0;
+}
+
+/* Each message row aligns left/right */
+.message-row {
+  display: flex;
+  margin: 8px 0;
+}
+
+.message-row.is-me {
+  justify-content: flex-end;
+}
+
+.message-row.is-them {
+  justify-content: flex-start;
+}
+
+/* Keep comment compact */
+.message-row ::ng-deep .ant-comment {
+  max-width: min(680px, 85%);
+}
+
+.message-row.is-me ::ng-deep .ant-comment-inner {
+  flex-direction: row-reverse; /* avatar on the right */
+}
+
+.message-row.is-me ::ng-deep .ant-comment-avatar {
+  margin-left: 8px;
+  margin-right: 0;
+}
+
+/* Hide author label if you want a cleaner DM look (optional)
+.message-row ::ng-deep .ant-comment-content-author {
+  display: none;
+}
+*/
+
+/* Bubble styling */
+.bubble {
+  display: inline-block;
+  padding: 10px 12px;
+  border-radius: 14px;
+  line-height: 1.35;
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+}
+
+/* Different bubble look for me/them */
+.message-row.is-me .bubble {
+  border-top-right-radius: 6px;
+}
+
+.message-row.is-them .bubble {
+  border-top-left-radius: 6px;
+}
+
+/* Slightly different backgrounds (kept neutral so you can theme later) */
+.message-row.is-me .bubble {
+  background: #e6f7ff;
+}
+
+.message-row.is-them .bubble {
+  background: #f5f5f5;
+}
+
+/* Footer stays visible at the bottom */
+.chat-footer {
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  box-sizing: border-box;
+
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fff;
+}
+
+/* Make input take the remaining width */
+.chat-footer nz-input-group {
+  flex: 1;
+}
+
+/* Title */
+.title-text {
+  margin-left: 8px;
+  font-weight: 600;
+}
+
+/* Smooth scrolling feel */
+.message-container {
+  scroll-behavior: smooth;
+}

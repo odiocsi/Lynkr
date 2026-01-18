@@ -57,6 +57,24 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         ClockSkew = TimeSpan.Zero 
     };
+
+    // Allow the JWT to be passed via query string for SignalR WebSocket connections:
+    //   /chatHub?access_token=...
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"].ToString();
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddControllers();
@@ -97,12 +115,17 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder =>
+    // IMPORTANT: For SignalR (negotiate uses fetch/XHR), browsers may include credentials.
+    // In that case, CORS cannot use AllowAnyOrigin(). Use explicit origins + AllowCredentials().
+    options.AddPolicy("AllowClient",
+        cors =>
         {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+            cors.WithOrigins(
+                    "http://localhost:4200",
+                    "https://localhost:4200")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
         });
 });
 
@@ -121,13 +144,18 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+// In development we typically run the SPA over http://localhost:4200.
+// Redirecting http->https can break SignalR negotiate if the dev cert isn't trusted.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseCors("AllowAll");
+app.UseCors("AllowClient");
 app.UseAuthentication(); 
 app.UseAuthorization();  
 
-app.MapControllers();
-app.MapHub<Lynkr.Hubs.ChatHub>("/chatHub");
+app.MapControllers().RequireCors("AllowClient");
+app.MapHub<Lynkr.Hubs.ChatHub>("/chatHub").RequireCors("AllowClient");
 
 app.Run();

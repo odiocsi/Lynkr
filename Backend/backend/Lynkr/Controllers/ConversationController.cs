@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Lynkr.Data; 
 using Lynkr.Hubs;
 using Lynkr.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
@@ -10,6 +12,7 @@ namespace Lynkr.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class MessagesController : ControllerBase
     {
         private readonly LynkrDBContext _context;
@@ -24,7 +27,9 @@ namespace Lynkr.Controllers
         [HttpPost]
         public async Task<IActionResult> SendMessage([FromBody] MessageDto msgDto)
         {
-            var senderUser = await _context.Users.FindAsync(msgDto.SenderId);
+            // Always trust the authenticated user, not client-provided senderId.
+            var senderId = GetCurrentUserId();
+            var senderUser = await _context.Users.FindAsync(senderId);
             if (senderUser == null)
             {
                 return BadRequest("Sender not found");
@@ -33,7 +38,7 @@ namespace Lynkr.Controllers
             var newMessage = new Message
             {
                 ConversationId = msgDto.ConversationId,
-                SenderId = msgDto.SenderId,
+                SenderId = senderId,
                 Content = msgDto.Content,
                 SentAt = DateTimeOffset.UtcNow
             };
@@ -42,16 +47,23 @@ namespace Lynkr.Controllers
             await _context.SaveChangesAsync();
 
 
-            msgDto.ConversationId = newMessage.Id; 
+            msgDto.MessageId = newMessage.Id;
+            msgDto.SenderId = senderId;
             msgDto.SentAt = newMessage.SentAt;
-
-            msgDto.SenderName = senderUser.Name;
+            msgDto.SenderName = senderUser.Name ?? "Unknown";
             msgDto.SenderProfilePictureUrl = senderUser.ProfilePictureUrl;
 
+            // Broadcast to the *conversation* group (do not overwrite conversationId with message id).
             await _hubContext.Clients.Group(msgDto.ConversationId.ToString())
                              .SendAsync("ReceiveMessage", msgDto);
 
             return Ok(msgDto);
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(userId!);
         }
     }
 }
@@ -61,6 +73,7 @@ namespace Lynkr.Models
 {
     public class MessageDto
     {
+        public int MessageId { get; set; }
         public int ConversationId { get; set; }
         public int SenderId { get; set; }
         public string Content { get; set; }
