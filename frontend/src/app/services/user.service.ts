@@ -18,13 +18,23 @@ export class UserService {
     this.apiUrl = this.apiService.API_URL + "/User";
   }
 
-  updateProfile(dto: UserUpdateDto): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/update`, dto);
-  }
+  updateProfile(username?: string, file?: File) {
+    const form = new FormData();
 
-  getMe() {
-    return this.http.get<{ userId: number; name: string; profilePictureUrl: string | null }>(
-      `${this.apiUrl}/me`
+    if (username && username.trim().length > 0) {
+      form.append('username', username);
+    }
+
+    if (file) {
+      form.append('file', file);
+    }
+
+    return this.http.put<{
+      name: string;
+      profilePictureUrl: string | null;
+    }>(
+      `${this.apiUrl}/update`,
+      form
     );
   }
 }

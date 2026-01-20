@@ -8,13 +8,13 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
-import { UserService, UserUpdateDto } from '../../services/user.service';
+import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-edit-profile',
   standalone: true,
-  imports: [FormsModule, NzCardModule, NzInputModule, NzButtonModule],
+  imports: [FormsModule, NgIf, NzCardModule, NzInputModule, NzButtonModule],
   templateUrl: './profile-edit.component.html',
   styleUrls: ['./profile-edit.component.less']
 })
@@ -24,6 +24,9 @@ export class EditProfileComponent implements OnInit {
 
   saving = false;
 
+  selectedFile?: File;
+  uploading: boolean = false;
+
   constructor(
     private auth: AuthService,
     private userService: UserService,
@@ -32,8 +35,6 @@ export class EditProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // If you already have "get current user" endpoint, load it here.
-    // If not, you can prefill from localStorage (if you store user there).
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
@@ -44,42 +45,65 @@ export class EditProfileComponent implements OnInit {
     }
   }
 
-  save() {
-    const name = this.username.trim();
-    const pic = this.profilePictureUrl.trim();
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
 
-    if (!name) {
-      this.msg.error('Name is required.');
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      this.msg.error('Only JPG, PNG, or WEBP images are allowed.');
+      input.value = '';
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.msg.error('Max file size is 5MB.');
+      input.value = '';
+      return;
+    }
+
+    this.selectedFile = file;
+  }
+
+  save() {
+    if (!this.username && !this.selectedFile) {
+      this.msg.warning('Nothing to update');
       return;
     }
 
     this.saving = true;
 
-    this.userService.updateProfile({ name, profilePictureUrl: pic || null }).subscribe({
-      next: () => {
-        // ✅ pull fresh user from backend
-        this.userService.getMe().subscribe({
-          next: (me) => {
-            localStorage.setItem('user_info', JSON.stringify(me));
-            this.auth.updateCurrentUer();
-            console.log(me)
-            this.msg.success('Profile updated!');
-            this.router.navigate(['/profile']);
-          },
-          error: (err) => {
-            console.error(err);
-            // even if refresh fails, update succeeded
-            this.msg.success('Profile updated!');
-            this.router.navigate(['/profile']);
-          }
-        });
+    this.userService.updateProfile(this.username, this.selectedFile).subscribe({
+      next: (res) => {
+        this.profilePictureUrl = res.profilePictureUrl ?? '';
+
+        const storedUser = localStorage.getItem('user_info');
+        let userObj: any = {};
+        if (storedUser) {
+          try { userObj = JSON.parse(storedUser); } catch { userObj = {}; }
+        }
+
+        userObj = {
+          ...userObj,
+          name: res.name ?? this.username,
+          profilePic: res.profilePictureUrl ?? null
+        };
+
+        localStorage.setItem('user_info', JSON.stringify(userObj));
+
+        this.auth.updateCurrentUer();
+
+        this.msg.success('Profile updated');
+        this.router.navigate(['/profile']);
       },
       error: (err) => {
-        console.error(err);
-        this.msg.error('Could not update profile.');
-        this.saving = false;
+        this.msg.error(err?.error?.message ?? 'Update failed');
       },
-      complete: () => (this.saving = false)
+      complete: () => {
+        this.saving = false;
+      }
     });
   }
 

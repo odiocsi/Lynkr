@@ -1,4 +1,5 @@
 ﻿using Lynkr.Models;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authorization; 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +18,20 @@ namespace Lynkr.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
 
-        public UserController(UserManager<User> userManager, IConfiguration configuration)
+        private static readonly HashSet<string> AllowedContentTypes = new()
+        {
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        };
+
+    public UserController(UserManager<User> userManager, IConfiguration configuration, IWebHostEnvironment environment)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _environment = environment;
         }
 
         // GET: api/user/me
@@ -125,24 +135,74 @@ namespace Lynkr.Controllers
 
         // PUT: api/user/update
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserUpdateDto updateDto)
+        [RequestSizeLimit(5 * 1024 * 1024)] // 5MB
+        public async Task<IActionResult> UpdateProfile(
+            [FromForm] UserUpdateDto form,
+            CancellationToken ct)
         {
+            if (form.Username == null && form.File == null)
+                return BadRequest(new { message = "Nothing to update." });
+
             var userId = GetCurrentUserId();
-
             var user = await _userManager.FindByIdAsync(userId.ToString());
-
             if (user == null) return NotFound("User not found");
 
-            user.Name = updateDto.Name;
-            user.ProfilePictureUrl = updateDto.ProfilePictureUrl;
+
+            if (!string.IsNullOrWhiteSpace(form.Username))
+            {
+                user.Name = form.Username.Trim();
+            }
+
+            if (form.File != null)
+            {
+                var file = form.File;
+
+                var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+                if (!allowedTypes.Contains(file.ContentType))
+                    return BadRequest(new { message = "Only JPG, PNG, or WEBP images allowed." });
+
+                if (file.Length == 0 || file.Length > 5 * 1024 * 1024)
+                    return BadRequest(new { message = "Invalid file size (max 5MB)." });
+
+                var webRoot = _environment.WebRootPath ??
+                              Path.Combine(_environment.ContentRootPath, "wwwroot");
+
+                Directory.CreateDirectory(webRoot);
+
+                var uploadDir = Path.Combine(webRoot, "uploads", "profile");
+                Directory.CreateDirectory(uploadDir);
+
+                var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (ext is not ".jpg" and not ".jpeg" and not ".png" and not ".webp")
+                    ext = ".img";
+
+                var fileName = $"{Guid.NewGuid():N}{ext}";
+                var fullPath = Path.Combine(uploadDir, fileName);
+
+                await using (var fs = System.IO.File.Create(fullPath))
+                {
+                    await file.CopyToAsync(fs, ct);
+                }
+
+                // Delete old profile picture (best effort)
+                TryDeleteOldLocalProfilePicture(user.ProfilePictureUrl, webRoot);
+
+                user.ProfilePictureUrl =
+                    $"{Request.Scheme}://{Request.Host}/uploads/profile/{fileName}";
+            }
 
             var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
 
-            if (result.Succeeded)
-                return Ok(new { message = "Profile updated successfully!" }); ;
-
-            return BadRequest(result.Errors);
+            return Ok(new
+            {
+                user.Name,
+                user.ProfilePictureUrl
+            });
         }
+
+
 
         // DELETE: api/user/delete
         [HttpDelete("delete")]
@@ -201,6 +261,28 @@ namespace Lynkr.Controllers
             if (string.IsNullOrEmpty(idClaim)) throw new UnauthorizedAccessException("User ID not found in token.");
             return int.Parse(idClaim);
         }
+
+        private static void TryDeleteOldLocalProfilePicture(string? oldUrl, string webRoot)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(oldUrl)) return;
+
+                var marker = "/uploads/profile/";
+                var idx = oldUrl.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+                if (idx< 0) return;
+
+                var relativePart = oldUrl[(idx + 1)..];
+                var fullPath = Path.Combine(webRoot, relativePart.Replace('/', Path.DirectorySeparatorChar));
+
+                if (System.IO.File.Exists(fullPath))
+                    System.IO.File.Delete(fullPath);
+            }
+            catch
+            {
+                // ignore (best-effort cleanup)
+            }
+        }
     }
 }
 
@@ -223,7 +305,7 @@ namespace Lynkr.Models
 
     public class UserUpdateDto
     {
-        public string Name { get; set; }
-        public string? ProfilePictureUrl { get; set; }
+        public string? Username { get; set; }
+        public IFormFile? File { get; set; }
     }
 }

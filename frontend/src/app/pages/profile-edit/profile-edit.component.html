@@ -10,20 +10,41 @@
 
     <div class="right">
       <label class="label">Username</label>
-      <input nz-input [(ngModel)]="username" placeholder="Enter new username" />
-
-      <label class="label" style="margin-top: 12px;">Profile picture URL</label>
       <input
         nz-input
-        [(ngModel)]="profilePictureUrl"
-        placeholder="https://..."
+        [(ngModel)]="username"
+        placeholder="Enter new username"
       />
 
+      <label class="label" style="margin-top: 12px;">
+        Upload a new profile picture
+      </label>
+      <input
+        type="file"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+      />
+
+      <div *ngIf="selectedFile" style="margin-top: 8px; font-size: 12px; opacity: 0.8;">
+        Selected: {{ selectedFile.name }}
+      </div>
+
       <div class="actions">
-        <button nz-button nzType="primary" (click)="save()" [disabled]="saving">
-          Save
+        <button
+          nz-button
+          nzType="primary"
+          (click)="save()"
+          [disabled]="saving"
+        >
+          {{ saving ? 'Saving...' : 'Save' }}
         </button>
-        <button nz-button nzType="default" (click)="cancel()" [disabled]="saving">
+
+        <button
+          nz-button
+          nzType="default"
+          (click)="cancel()"
+          [disabled]="saving"
+        >
           Cancel
         </button>
       </div>
