@@ -1,7 +1,6 @@
 
+<img width="280" height="226" alt="large-removebg-preview" src="https://github.com/user-attachments/assets/149a8cc5-e443-4803-bf60-cbc3dbf10526" />
 # 🔗 Lynkr
-<img width="559" height="447" alt="large-removebg-preview" src="https://github.com/user-attachments/assets/149a8cc5-e443-4803-bf60-cbc3dbf10526" />
-
 
 **Lynkr** is a full-stack social media platform designed and built for the **Full Stack Web Programming** course. It provides a seamless environment for users to connect, share updates, and interact with friends in real-time, showcasing modern web development practices and a robust tech stack.
 
