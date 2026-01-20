@@ -154,3 +154,5 @@ app.MapControllers().RequireCors("AllowClient");
 app.MapHub<Lynkr.Hubs.ChatHub>("/chatHub").RequireCors("AllowClient");
 
 app.Run();
+
+public partial class Program { }
