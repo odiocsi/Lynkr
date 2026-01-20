@@ -1,4 +1,4 @@
-name: 💻 Lynkr Frontend CI/CD
+name: 💻 Frontend CI/CD
 
 on:
   push:
