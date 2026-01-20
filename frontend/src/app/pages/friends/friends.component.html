@@ -12,7 +12,7 @@
 
           <ng-template #friendAvatar>
             <nz-avatar
-              [nzSrc]="friend.friendProfilePic || 'assets/default-avatar.png'"
+              [nzSrc]="friend.friendProfilePic || 'default_profile_picture.png'"
               nzSize="large"
             ></nz-avatar>
           </ng-template>
@@ -46,7 +46,7 @@
 
           <ng-template #pendingAvatar>
             <nz-avatar
-              [nzSrc]="user.requesterPic || 'assets/default-avatar.png'"
+              [nzSrc]="user.requesterPic || 'default_profile_picture.png'"
               nzSize="large"
             ></nz-avatar>
           </ng-template>
@@ -111,7 +111,7 @@
 
           <ng-template #searchAvatar>
             <nz-avatar
-              [nzSrc]="user.profilePictureUrl || 'assets/default-avatar.png'"
+              [nzSrc]="user.profilePictureUrl || 'default_profile_picture.png'"
               nzSize="large"
             ></nz-avatar>
           </ng-template>

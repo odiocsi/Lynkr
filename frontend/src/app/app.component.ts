@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { NzIconModule } from 'ng-zorro-antd/icon';
 import { AuthService } from './services/auth.service';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from "./components/sidebar/sidebar.component";
@@ -16,7 +15,6 @@ import { SidebarComponent } from "./components/sidebar/sidebar.component";
     CommonModule,
     NzLayoutModule,
     NzMenuModule,
-    NzIconModule,
     NavbarComponent,
     SidebarComponent
 ],

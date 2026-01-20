@@ -8,7 +8,7 @@
 
           <nz-comment [nzAuthor]="msg.senderName">
             <nz-avatar nz-comment-avatar
-                       [nzSrc]="msg.senderProfilePictureUrl || 'assets/default-avatar.png'">
+                       [nzSrc]="msg.senderProfilePictureUrl || 'default_profile_picture.png'">
             </nz-avatar>
             <nz-comment-content>
               <div class="bubble">
@@ -30,7 +30,7 @@
       </nz-input-group>
       <ng-template #suffixIconButton>
         <button nz-button nzType="primary" nzShape="circle" (click)="send()" [disabled]="!newMessage.trim()">
-          <i nz-icon nzType="send"></i>
+          <i class="fa-solid fa-paper-plane"></i>
         </button>
       </ng-template>
     </div>
@@ -38,6 +38,5 @@
 </div>
 
 <ng-template #chatTitle>
-  <span nz-icon nzType="message" nzTheme="outline"></span>
   <span class="title-text">{{ friendName }}</span>
 </ng-template>

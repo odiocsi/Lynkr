@@ -19,8 +19,8 @@ export interface PendingRequest {
   providedIn: 'root'
 })
 export class FriendService {
-  private friendshipUrl: string = "";
-  private userUrl: string = "";
+  private friendshipUrl: string;
+  private userUrl: string;
 
   public friends = signal<Friend[]>([]);
 
@@ -39,6 +39,7 @@ export class FriendService {
   }
 
   sendFriendRequest(targetUserId: number): Observable<any> {
+    console.log(this.http.post(`${this.friendshipUrl}/request`, { targetUserId }));
     return this.http.post(`${this.friendshipUrl}/request`, { targetUserId });
   }
 

@@ -49,10 +49,6 @@ export class FriendsComponent implements OnInit {
     });
   }
 
-  goToProfile(userId: number) {
-  this.router.navigate(['/profile'], { queryParams: { id: userId } });
-  }
-
   loadPending() {
     this.friendService.getPendingRequests().subscribe({
       next: (res) => this.pendingRequests.set(res || []),
@@ -83,7 +79,8 @@ export class FriendsComponent implements OnInit {
           users.filter(u => u.id !== targetUserId)
         );
         this.searchQuery = '';
-        this.onSearch();
+        this.searchResults.set([]);
+        this.router.navigate(["/friends"]);
       },
       error: err => console.error('sendFriendRequest failed', err)
     });

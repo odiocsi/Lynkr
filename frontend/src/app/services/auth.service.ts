@@ -14,23 +14,26 @@ export interface UserInfo {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl : string = "";
-  // A signal to hold the current user info
+  private apiUrl : string;
   currentUser = signal<UserInfo | null>(this.getUserFromStorage());
 
   constructor(private http: HttpClient, private router: Router, private apiService: ApiService) {
     this.apiUrl = this.apiService.API_URL + "/User";
   }
 
+  // register user
   register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData);
   }
 
+  // login with user
   login(credentials: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
-        // Save everything to localStorage
+        // Save jwt token to localstorage
         localStorage.setItem('auth_token', response.token);
+
+        // save user info to local storage
         const userInfo: UserInfo = {
           userId: response.userId,
           name: response.name,
@@ -38,12 +41,13 @@ export class AuthService {
         };
         localStorage.setItem('user_info', JSON.stringify(userInfo));
 
-        // Update the signal so the whole app knows who is logged in
+        // store user to signal
         this.currentUser.set(userInfo);
       })
     );
   }
 
+  // logout => remove data from localstorage
   logout(): void {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_info');
@@ -51,10 +55,12 @@ export class AuthService {
     this.router.navigate(['/login'], { replaceUrl: true });
   }
 
+  // update current user from localstorage
   public updateCurrentUer(): void {
     this.currentUser = signal<UserInfo | null>(this.getUserFromStorage());
   }
 
+  // read user inforamation from localstorage
   private getUserFromStorage(): UserInfo | null {
     const data = localStorage.getItem('user_info');
     return data ? JSON.parse(data) : null;

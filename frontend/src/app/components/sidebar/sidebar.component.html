@@ -4,7 +4,7 @@
       <li nz-menu-group nzTitle="Friends">
         <ul>
           <li nz-menu-item *ngFor="let friend of friendService.friends()" (click)="goToChat(friend.friendId, friend.friendName)">
-            <nz-avatar nzSize="small" [nzSrc]="friend.friendProfilePic || ''" nzIcon="user"></nz-avatar>
+            <nz-avatar nzSize="small" [nzSrc]="friend.friendProfilePic || 'default_profile_picture.png'" nzIcon="user"></nz-avatar>
             <span style="margin-left: 8px;">{{ friend.friendName }}</span>
           </li>
           <li nz-menu-item *ngIf="friendService.friends().length === 0" nzDisabled>

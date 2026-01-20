@@ -4,13 +4,13 @@ import { authGuard } from './guards/auth.guard';
 export const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./pages/login-page/login-page.component')
-    .then(c => c.LoginPageComponent),
+    loadComponent: () => import('./pages/login/login.component')
+    .then(c => c.LoginComponent),
   },
   {
-    path: 'signup',
-    loadComponent: () => import('./pages/signup-page/signup-page.component')
-    .then(c => c.SignupPageComponent),
+    path: 'register',
+    loadComponent: () => import('./pages/register/register.component')
+    .then(c => c.SignupComponent),
   },
   {
     path: 'home',
@@ -26,8 +26,8 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
-    loadComponent: () => import('./pages/profile-page/profile-page.component')
-    .then(c => c.ProfilePageComponent),
+    loadComponent: () => import('./pages/profile/profile.component')
+    .then(c => c.ProfileComponent),
     canActivate: [authGuard]
   },
   {

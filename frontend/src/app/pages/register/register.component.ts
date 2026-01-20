@@ -18,10 +18,10 @@ import { AuthService } from '../../services/auth.service';
     RouterLink,
   ],
   standalone: true,
-  templateUrl: './signup-page.component.html',
-  styleUrls: ['./signup-page.component.less']
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.less']
 })
-export class SignupPageComponent implements OnInit {
+export class SignupComponent implements OnInit {
   signupForm!: FormGroup;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}

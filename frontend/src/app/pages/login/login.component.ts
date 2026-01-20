@@ -19,10 +19,10 @@ import { AuthService } from '../../services/auth.service';
     RouterLink,
   ],
   standalone: true,
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.less']
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.less']
 })
-export class LoginPageComponent implements OnInit {
+export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
 
   // Inject AuthService and Router

@@ -12,7 +12,7 @@ export interface UserUpdateDto {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl: string = "";
+  private apiUrl: string;
 
   constructor(private http: HttpClient, private apiService: ApiService) {
     this.apiUrl = this.apiService.API_URL + "/User";

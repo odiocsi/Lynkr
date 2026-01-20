@@ -8,8 +8,9 @@ export interface Post {
   content: string;
   createdAt: string;
   userId: number;
-  userName: string;
+  authorName: string;
   profilePictureUrl: string | null;
+  likedByCurrentUser: boolean;
   likesCount: number;
 }
 
@@ -22,7 +23,7 @@ export interface PostCreateDto {
   providedIn: 'root'
 })
 export class PostService {
-  private apiUrl : string = "";
+  private apiUrl: string;
 
   constructor(private http: HttpClient, private apiService: ApiService) {
     this.apiUrl = this.apiService.API_URL + "/Post"

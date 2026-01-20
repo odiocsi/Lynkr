@@ -23,8 +23,8 @@ export interface ChatMessage {
 })
 export class ChatService {
 
-  private apiUrl : string = "";
-  private hubUrl : string = "";
+  private apiUrl : string;
+  private hubUrl : string;
 
   private connection!: HubConnection;
   private startPromise: Promise<void> | null = null;
@@ -38,9 +38,7 @@ export class ChatService {
     this.createConnection();
   }
 
-  // =========================
-  // SignalR connection setup
-  // =========================
+  // signalR setup
   private createConnection(): void {
     this.connection = new HubConnectionBuilder()
       .withUrl(this.hubUrl, {
@@ -64,6 +62,7 @@ export class ChatService {
     });
   }
 
+  // check connection with hub
   private ensureConnection(): Promise<void> {
     if (this.connection.state === HubConnectionState.Connected) {
       return Promise.resolve();
@@ -82,25 +81,21 @@ export class ChatService {
     return this.startPromise;
   }
 
-  // =========================
-  // Conversations (REST)
-  // =========================
+  // Load Conversation or create if none existent
   getOrCreateConversation(friendUserId: string): Observable<{ conversationId: string }> {
     return this.http.get<{ conversationId: string }>(
       `${this.apiUrl}/conversations/with/${friendUserId}`
     );
   }
 
+  // Load messages
   loadMessages(conversationId: string): Observable<ChatMessage[]> {
     return this.http.get<ChatMessage[]>(
       `${this.apiUrl}/conversations/${conversationId}/messages`
     );
   }
 
-  // =========================
-  // SignalR actions
-  // =========================
-
+  // signalR
   async sendMessageToUser(recipientUserId: number, content: string): Promise<void> {
     await this.ensureConnection();
 
@@ -109,14 +104,8 @@ export class ChatService {
     await this.connection.invoke('SendDirectMessage', recipientUserId, content);
   }
 
-  // =========================
-  // Local state helpers
-  // =========================
   setMessages(messages: ChatMessage[]): void {
     this.messagesSubject.next(messages);
   }
 
-  clearMessages(): void {
-    this.messagesSubject.next([]);
-  }
 }

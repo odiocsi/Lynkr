@@ -18,10 +18,10 @@ import { RouterLink } from '@angular/router';
     NzButtonModule,
     RouterLink
   ],
-  templateUrl: './profile-page.component.html',
-  styleUrl: './profile-page.component.less'
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.less'
 })
-export class ProfilePageComponent {
+export class ProfileComponent {
   // Inject the AuthService to get current user data
   public auth = inject(AuthService);
 }

@@ -17,12 +17,12 @@
     <nz-card *ngFor="let post of posts()" class="post-card">
       <nz-card-meta
         [nzAvatar]="avatarTemplate"
-        [nzTitle]="post.userName"
+        [nzTitle]="post.authorName"
         [nzDescription]="post.createdAt | date:'medium'">
       </nz-card-meta>
 
       <ng-template #avatarTemplate>
-        <nz-avatar [nzSrc]="post.profilePictureUrl || '' "></nz-avatar>
+        <nz-avatar [nzSrc]="post.profilePictureUrl || 'default_profile_picture.png' "></nz-avatar>
       </ng-template>
 
       <div class="post-content">
