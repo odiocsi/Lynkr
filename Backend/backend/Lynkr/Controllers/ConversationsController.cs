@@ -23,7 +23,6 @@ namespace Lynkr.Controllers
         }
 
         // GET: api/conversations/with/123
-        // Returns the conversationId for a 1:1 chat (creates it if it does not exist).
         [HttpGet("with/{otherUserId:int}")]
         public async Task<IActionResult> GetOrCreateWithUser(int otherUserId)
         {
@@ -66,7 +65,6 @@ namespace Lynkr.Controllers
         {
             var currentUserId = GetCurrentUserId();
 
-            // Ensure the current user is a participant of the conversation
             var allowed = await _context.Conversations
                 .AsNoTracking()
                 .AnyAsync(c => c.Id == conversationId && (c.User1Id == currentUserId || c.User2Id == currentUserId));

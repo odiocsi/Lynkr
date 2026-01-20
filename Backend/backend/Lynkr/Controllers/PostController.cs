@@ -14,6 +14,9 @@ namespace Lynkr.Controllers
     {
         private readonly LynkrDBContext _context;
 
+        private const string STATUS_PENDING = "PENDING";
+        private const string STATUS_ACCEPTED = "ACCEPTED";
+
         public PostController(LynkrDBContext context)
         {
             _context = context;
@@ -37,7 +40,8 @@ namespace Lynkr.Controllers
                 post.Content,
                 post.CreatedAt,
                 AuthorName = post.User.Name,
-                AuthorProfilePic = post.User.ProfilePictureUrl
+                AuthorProfilePic = post.User.ProfilePictureUrl,
+                LikeCount = await _context.Likes.CountAsync(l => l.PostId == id)
             });
         }
 
@@ -50,9 +54,12 @@ namespace Lynkr.Controllers
             var feedPosts = await _context.Posts
                 .Include(p => p.User)
                 .Where(post => _context.Friendships.Any(f =>
-                    (f.User1Id == currentUserId && f.User2Id == post.UserId) ||
-                    (f.User2Id == currentUserId && f.User1Id == post.UserId)
-                ))
+                            (
+                                (f.User1Id == currentUserId && f.User2Id == post.UserId) ||
+                                (f.User2Id == currentUserId && f.User1Id == post.UserId)
+                            )
+                            && f.Status == STATUS_ACCEPTED 
+                        ))
                 .OrderByDescending(p => p.CreatedAt)
                 .AsNoTracking()
                 .Select(post => new
@@ -63,11 +70,46 @@ namespace Lynkr.Controllers
                     AuthorId = post.UserId,
                     AuthorName = post.User.Name,
                     AuthorProfilePic = post.User.ProfilePictureUrl,
+                    LikeCount = post.Likes.Count(),
                     IsLikedByCurrentUser = post.Likes.Any(l => l.UserId == currentUserId)
                 })
                 .ToListAsync();
 
             return Ok(feedPosts);
+        }
+
+        // POST: api/post/{id}/like
+        // This toggles the like: If liked, it unlikes. If not liked, it likes.
+        [HttpPost("{id}/like")]
+        public async Task<IActionResult> ToggleLike(int id)
+        {
+            var currentUserId = GetCurrentUserId();
+
+            var postExists = await _context.Posts.AnyAsync(p => p.Id == id);
+            if (!postExists) return NotFound("Post not found.");
+
+            var existingLike = await _context.Likes
+                .FirstOrDefaultAsync(l => l.PostId == id && l.UserId == currentUserId);
+
+            if (existingLike != null)
+            {
+                _context.Likes.Remove(existingLike);
+                await _context.SaveChangesAsync();
+                return Ok(new { Message = "Post unliked", IsLiked = false });
+            }
+            else
+            {
+                var newLike = new Like
+                {
+                    PostId = id,
+                    UserId = currentUserId,
+                    CreatedAt = DateTimeOffset.UtcNow
+                };
+
+                _context.Likes.Add(newLike);
+                await _context.SaveChangesAsync();
+                return Ok(new { Message = "Post liked", IsLiked = true });
+            }
         }
 
         // POST: api/post
@@ -82,8 +124,7 @@ namespace Lynkr.Controllers
             {
                 UserId = currentUserId,
                 Content = postDto.Content,
-                CreatedAt = DateTimeOffset.UtcNow,
-                ImageUrl = postDto.ImageUrl 
+                CreatedAt = DateTimeOffset.UtcNow
             };
 
             _context.Posts.Add(newPost);
@@ -129,6 +170,5 @@ namespace Lynkr.Models
     public class PostCreateDto
     {
         public string Content { get; set; }
-        public string ImageUrl { get; set; }
     }
 }

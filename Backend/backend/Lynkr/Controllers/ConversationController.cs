@@ -27,7 +27,6 @@ namespace Lynkr.Controllers
         [HttpPost]
         public async Task<IActionResult> SendMessage([FromBody] MessageDto msgDto)
         {
-            // Always trust the authenticated user, not client-provided senderId.
             var senderId = GetCurrentUserId();
             var senderUser = await _context.Users.FindAsync(senderId);
             if (senderUser == null)
@@ -53,7 +52,6 @@ namespace Lynkr.Controllers
             msgDto.SenderName = senderUser.Name ?? "Unknown";
             msgDto.SenderProfilePictureUrl = senderUser.ProfilePictureUrl;
 
-            // Broadcast to the *conversation* group (do not overwrite conversationId with message id).
             await _hubContext.Clients.Group(msgDto.ConversationId.ToString())
                              .SendAsync("ReceiveMessage", msgDto);
 

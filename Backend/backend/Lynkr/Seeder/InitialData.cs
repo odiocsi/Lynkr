@@ -42,7 +42,6 @@ namespace Lynkr.Seeder
             UserId = UserAlice.Id,
             Content = "First post from Alice!",
             CreatedAt = DateTimeOffset.UtcNow.AddDays(-5),
-            ImageUrl = "https://placehold.co/600x400/4CAF50/white?text=Alice+Post"
         };
 
         public static readonly Post PostBob1 = new()
@@ -51,7 +50,6 @@ namespace Lynkr.Seeder
             UserId = UserBob.Id,
             Content = "Bob checking in with a new post.",
             CreatedAt = DateTimeOffset.UtcNow.AddDays(-2),
-            ImageUrl = "https://placehold.co/600x400/2196F3/white?text=Bob+Post"
         };
 
         // --- FRIENDSHIPS ---

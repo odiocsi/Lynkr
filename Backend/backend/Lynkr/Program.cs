@@ -58,8 +58,6 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero 
     };
 
-    // Allow the JWT to be passed via query string for SignalR WebSocket connections:
-    //   /chatHub?access_token=...
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -115,8 +113,6 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddCors(options =>
 {
-    // IMPORTANT: For SignalR (negotiate uses fetch/XHR), browsers may include credentials.
-    // In that case, CORS cannot use AllowAnyOrigin(). Use explicit origins + AllowCredentials().
     options.AddPolicy("AllowClient",
         cors =>
         {
@@ -140,13 +136,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-// --- PIPELINE  ---
-
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// In development we typically run the SPA over http://localhost:4200.
-// Redirecting http->https can break SignalR negotiate if the dev cert isn't trusted.
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
