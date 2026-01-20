@@ -57,4 +57,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          path: dist/frontend/browser
+          path: /home/runner/work/Lynkr/Lynkr/frontend/dist/frontend
