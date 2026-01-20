@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
 export interface Friend {
   friendId: number;
@@ -18,12 +19,15 @@ export interface PendingRequest {
   providedIn: 'root'
 })
 export class FriendService {
-  private friendshipUrl = 'http://localhost:5223/api/friendship';
-  private userUrl = 'http://localhost:5223/api/user';
+  private friendshipUrl: string = "";
+  private userUrl: string = "";
 
   public friends = signal<Friend[]>([]);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private apiService: ApiService) {
+    this.userUrl = this.apiService.API_URL + "/User";
+    this.friendshipUrl = this.apiService.API_URL + "/Friendship";
+  }
 
 
   getFriends(): Observable<Friend[]> {

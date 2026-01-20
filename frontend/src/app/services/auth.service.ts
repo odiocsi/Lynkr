@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { ApiService } from './api.service';
 
 export interface UserInfo {
   userId: number;
@@ -13,11 +14,13 @@ export interface UserInfo {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5223/api/user';
+  private apiUrl : string = "";
   // A signal to hold the current user info
   currentUser = signal<UserInfo | null>(this.getUserFromStorage());
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private apiService: ApiService) {
+    this.apiUrl = this.apiService.API_URL + "/User";
+  }
 
   register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData);

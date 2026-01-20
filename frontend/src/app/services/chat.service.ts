@@ -6,6 +6,7 @@ import {
   HubConnectionState
 } from '@microsoft/signalr';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
 export interface ChatMessage {
   messageId: number;
@@ -22,8 +23,8 @@ export interface ChatMessage {
 })
 export class ChatService {
 
-  private readonly apiBaseUrl = 'http://localhost:5223/api';
-  private readonly hubUrl = 'http://localhost:5223/chatHub';
+  private apiUrl : string = "";
+  private hubUrl : string = "";
 
   private connection!: HubConnection;
   private startPromise: Promise<void> | null = null;
@@ -31,7 +32,9 @@ export class ChatService {
   private messagesSubject = new BehaviorSubject<ChatMessage[]>([]);
   messages$ = this.messagesSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private apiSerivce: ApiService) {
+    this.apiUrl = this.apiSerivce.API_URL;
+    this.hubUrl = this.apiSerivce.HUB_URL;
     this.createConnection();
   }
 
@@ -84,13 +87,13 @@ export class ChatService {
   // =========================
   getOrCreateConversation(friendUserId: string): Observable<{ conversationId: string }> {
     return this.http.get<{ conversationId: string }>(
-      `${this.apiBaseUrl}/conversations/with/${friendUserId}`
+      `${this.apiUrl}/conversations/with/${friendUserId}`
     );
   }
 
   loadMessages(conversationId: string): Observable<ChatMessage[]> {
     return this.http.get<ChatMessage[]>(
-      `${this.apiBaseUrl}/conversations/${conversationId}/messages`
+      `${this.apiUrl}/conversations/${conversationId}/messages`
     );
   }
 

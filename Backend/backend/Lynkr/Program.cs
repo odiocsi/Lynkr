@@ -122,7 +122,8 @@ builder.Services.AddCors(options =>
         {
             cors.WithOrigins(
                     "http://localhost:4200",
-                    "https://localhost:4200")
+                    "https://localhost:4200",
+                    "https://odiocsi.github.io")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
