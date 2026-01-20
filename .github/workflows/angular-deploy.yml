@@ -37,14 +37,16 @@ jobs:
         working-directory: frontend
 
       - name: Add SPA fallback (404.html)
+        working-directory: frontend  # <--- This is the key fix
         run: |
-          APP_DIR=$(ls dist | head -n 1)
-          cp "/home/runner/work/Lynkr/Lynkr/frontend/dist/frontend/index.html" "/home/runner/work/Lynkr/Lynkr/frontend/dist/frontend/404.html"
+          # Now 'dist' exists relative to this folder
+          cp "dist/frontend/browser/index.html" "dist/frontend/browser/404.html"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          # Point to the browser folder where index.html lives
+          path: frontend/dist/frontend/browser
 
   deploy:
     runs-on: ubuntu-latest
@@ -56,5 +58,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          path: /home/runner/work/Lynkr/Lynkr/frontend/dist/frontend/index.html
