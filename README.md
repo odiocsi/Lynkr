@@ -42,7 +42,4 @@ This project leverages **GitHub Actions** for Continuous Integration and Deploym
 | :--- | :--- |
 | **Course** | Full Stack Web Programming |
 | **Institution** | Eötvös Loránd Tudományegyetem (ELTE) |
-| **Project Type** | Semester Project |
 
----
-*Developed by [Your Name]*
