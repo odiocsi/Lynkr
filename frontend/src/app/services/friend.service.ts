@@ -39,12 +39,11 @@ export class FriendService {
   }
 
   sendFriendRequest(targetUserId: number): Observable<any> {
-    console.log(this.http.post(`${this.friendshipUrl}/request`, { targetUserId }));
-    return this.http.post(`${this.friendshipUrl}/request`, { targetUserId });
+    return this.http.post(`${this.friendshipUrl}/request`, { targetUserId }, { responseType: 'text' });
   }
 
   acceptFriendRequest(requesterId: number): Observable<any> {
-    return this.http.put(`${this.friendshipUrl}/accept`, { requesterId } );
+    return this.http.put(`${this.friendshipUrl}/accept`, { requesterId }, { responseType: 'text' });
   }
 
   removeFriend(otherUserId: number): Observable<any> {

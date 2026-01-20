@@ -10,6 +10,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   standalone: true,
@@ -28,14 +29,20 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
   styleUrls: ['./friends.component.less']
 })
 export class FriendsComponent implements OnInit {
+  selectedTab: number = 0;
 
   friends = signal<Friend[]>([]);
   pendingRequests = signal<PendingRequest[]>([]);
+
+  searchQuery : string = '';
   searchResults = signal<any[]>([]);
 
-  searchQuery = '';
 
-  constructor(private friendService: FriendService, private router: Router) {}
+  constructor(
+    private message: NzMessageService,
+    private friendService: FriendService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadFriends();
@@ -68,7 +75,7 @@ export class FriendsComponent implements OnInit {
 
   onQueryChange() {
     if (!this.searchQuery.trim()) {
-      this.searchResults.set([]);
+      this.onSearch();
     }
   }
 
@@ -80,9 +87,10 @@ export class FriendsComponent implements OnInit {
         );
         this.searchQuery = '';
         this.searchResults.set([]);
-        this.router.navigate(["/friends"]);
+        this.selectedTab = 0;
+        this.message.success('Friend request sent!');
       },
-      error: err => console.error('sendFriendRequest failed', err)
+      error: err => this.message.error(err)
     });
   }
 
@@ -91,25 +99,27 @@ export class FriendsComponent implements OnInit {
     next: () => {
       this.loadPending();
       this.loadFriends();
+      this.selectedTab = 0;
+      this.message.success('You have accepted a friends request.');
     },
-    error: err => console.error('acceptFriendRequest failed', err)
+    error: err => this.message.error('You have failed to accept the friend request.')
   });
   }
 
   removeFriend(otherUserId: number) {
     this.friendService.removeFriend(otherUserId).subscribe({
       next: () => {
-        // remove from friends (if present)
         this.friends.update(f =>
           f.filter(friend => friend.friendId !== otherUserId)
         );
 
-        // remove from pending (if present)
         this.pendingRequests.update(p =>
           p.filter(req => req.requesterId !== otherUserId)
         );
+
+        this.message.success('You have removed a friend.')
       },
-      error: err => console.error('removeFriend failed', err)
+      error: err => this.message.error('You have failed to remove a friend.')
     });
   }
 
