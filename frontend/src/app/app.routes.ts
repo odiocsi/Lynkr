@@ -1,39 +1,45 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 
-import { LoginPageComponent } from './pages/login-page/login-page.component';
-import { FriendsComponent } from './pages/friends/friends.component';
-import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
-import { HomeComponent } from './pages/home/home.component';
-import { EditProfileComponent } from './pages/profile-edit/profile-edit.component';
-import { ChatComponent } from './pages/chat/chat.component';
-
 export const routes: Routes = [
-  { path: 'login', component: LoginPageComponent },
-
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login-page/login-page.component')
+    .then(c => c.LoginPageComponent),
+  },
+  {
+    path: 'signup',
+    loadComponent: () => import('./pages/signup-page/signup-page.component')
+    .then(c => c.SignupPageComponent),
+  },
   {
     path: 'home',
-    component: HomeComponent,
+    loadComponent: () => import('./pages/home/home.component')
+    .then(c => c.HomeComponent),
     canActivate: [authGuard]
   },
   {
     path: 'friends',
-    component: FriendsComponent,
+    loadComponent: () => import('./pages/friends/friends.component')
+    .then(c => c.FriendsComponent),
     canActivate: [authGuard]
   },
   {
     path: 'profile',
-    component: ProfilePageComponent,
+    loadComponent: () => import('./pages/profile-page/profile-page.component')
+    .then(c => c.ProfilePageComponent),
     canActivate: [authGuard]
   },
   {
   path: 'profile/edit',
-  component: EditProfileComponent,
+  loadComponent: () => import('./pages/profile-edit/profile-edit.component')
+  .then( c=> c.EditProfileComponent),
   canActivate: [authGuard]
   },
   {
     path: 'chat/:friendId',
-    component: ChatComponent,
+    loadComponent: () => import('./pages/chat/chat.component')
+    .then( c=> c.ChatComponent),
     canActivate: [authGuard]
   },
 
