@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
+
 import { Router } from '@angular/router';
 
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -14,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-edit-profile',
   standalone: true,
-  imports: [FormsModule, NgIf, NzCardModule, NzInputModule, NzButtonModule],
+  imports: [FormsModule, NzCardModule, NzInputModule, NzButtonModule],
   templateUrl: './profile-edit.component.html',
   styleUrls: ['./profile-edit.component.less']
 })

@@ -1,16 +1,20 @@
 <nz-layout class="sidebar">
-      <ul nz-menu nzMode="inline">
+  <ul nz-menu nzMode="inline">
 
-      <li nz-menu-group nzTitle="Friends">
-        <ul>
-          <li nz-menu-item *ngFor="let friend of friendService.friends()" (click)="goToChat(friend.friendId, friend.friendName)">
+    <li nz-menu-group nzTitle="Friends">
+      <ul>
+        @for (friend of friendService.friends(); track friend) {
+          <li nz-menu-item (click)="goToChat(friend.friendId, friend.friendName)">
             <nz-avatar nzSize="small" [nzSrc]="friend.friendProfilePic || 'default_profile_picture.png'" nzIcon="user"></nz-avatar>
             <span style="margin-left: 8px;">{{ friend.friendName }}</span>
           </li>
-          <li nz-menu-item *ngIf="friendService.friends().length === 0" nzDisabled>
+        }
+        @if (friendService.friends().length === 0) {
+          <li nz-menu-item nzDisabled>
             <span>No friends yet</span>
           </li>
-        </ul>
-      </li>
-    </ul>
+        }
+      </ul>
+    </li>
+  </ul>
 </nz-layout>

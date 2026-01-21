@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
@@ -11,13 +11,12 @@ import { RouterLink } from '@angular/router';
   selector: 'app-profile',
   standalone: true,
   imports: [
-    CommonModule,
     NzCardModule,
     NzAvatarModule,
     NzDescriptionsModule,
     NzButtonModule,
     RouterLink
-  ],
+],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.less'
 })

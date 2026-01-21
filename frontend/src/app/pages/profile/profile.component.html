@@ -1,23 +1,23 @@
-<div class="profile-container" *ngIf="auth.currentUser() as user">
-  <nz-card nzTitle="My Profile" [nzBordered]="false" class="profile-card">
-    <div class="profile-header">
-      <nz-avatar
-        [nzSize]="128"
-        [nzSrc]="user.profilePic || 'default_profile_picture.png'"
-        nzIcon="user">
-      </nz-avatar>
-      <h2>{{ user.name }}</h2>
-    </div>
-
-    <nz-descriptions nzTitle="User Information" nzBordered [nzColumn]="1">
-      <nz-descriptions-item nzTitle="Display Name">
-        {{ user.name }}
-      </nz-descriptions-item>
-    </nz-descriptions>
-
-    <div class="profile-actions">
-      <button nz-button nzType="primary" routerLink="/profile/edit">Edit Profile</button>
-      <button nz-button nzDanger (click)="auth.logout()">Logout</button>
-    </div>
-  </nz-card>
-</div>
+@if (auth.currentUser(); as user) {
+  <div class="profile-container">
+    <nz-card nzTitle="My Profile" [nzBordered]="false" class="profile-card">
+      <div class="profile-header">
+        <nz-avatar
+          [nzSize]="128"
+          [nzSrc]="user.profilePic || 'default_profile_picture.png'"
+          nzIcon="user">
+        </nz-avatar>
+        <h2>{{ user.name }}</h2>
+      </div>
+      <nz-descriptions nzTitle="User Information" nzBordered [nzColumn]="1">
+        <nz-descriptions-item nzTitle="Display Name">
+          {{ user.name }}
+        </nz-descriptions-item>
+      </nz-descriptions>
+      <div class="profile-actions">
+        <button nz-button nzType="primary" routerLink="/profile/edit">Edit Profile</button>
+        <button nz-button nzDanger (click)="auth.logout()">Logout</button>
+      </div>
+    </nz-card>
+  </div>
+}

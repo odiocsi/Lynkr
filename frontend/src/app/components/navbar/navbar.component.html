@@ -9,18 +9,19 @@
       <a class="nav-link" routerLink="/friends">Friends</a>
     </nav>
 
-    <div class="user-profile" *ngIf="auth.currentUser() as user">
-      <span class="vertical-separator"></span>
-
-      <a class="user-profile" routerLink="profile">
-        <span>{{ user.name }}</span>
-      </a>
+    @if (auth.currentUser(); as user) {
+      <div class="user-profile">
+        <span class="vertical-separator"></span>
+        <a class="user-profile" routerLink="profile">
+          <span>{{ user.name }}</span>
+        </a>
         <img
-        class="avatar-circle"
-        [src]="user.profilePic || 'default_profile_picture.png'"
-        width="30"
-        />
-        <button (click)="auth.logout()">Logout</button>
+          class="avatar-circle"
+          [src]="user.profilePic || 'default_profile_picture.png'"
+          width="30"
+          />
+          <button (click)="auth.logout()">Logout</button>
+        </div>
+      }
     </div>
-  </div>
-</header>
+  </header>

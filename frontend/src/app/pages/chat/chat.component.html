@@ -2,41 +2,42 @@
   <nz-card [nzTitle]="chatTitle" class="chat-card">
     <div class="message-container" #scrollContainer>
       <nz-list nzItemLayout="horizontal">
-        <div *ngFor="let msg of messages"
-             [ngClass]="{'is-me': msg.senderId === currentUserId, 'is-them': msg.senderId !== currentUserId}"
-             class="message-row">
-
-          <nz-comment [nzAuthor]="msg.senderName">
-            <nz-avatar nz-comment-avatar
-                       [nzSrc]="msg.senderProfilePictureUrl || 'default_profile_picture.png'">
-            </nz-avatar>
-            <nz-comment-content>
-              <div class="bubble">
-                {{ msg.content }}
-              </div>
-            </nz-comment-content>
-          </nz-comment>
-        </div>
+        @for (msg of messages; track msg) {
+          <div
+            [ngClass]="{'is-me': msg.senderId === currentUserId, 'is-them': msg.senderId !== currentUserId}"
+            class="message-row">
+            <nz-comment [nzAuthor]="msg.senderName">
+              <nz-avatar nz-comment-avatar
+                [nzSrc]="msg.senderProfilePictureUrl || 'default_profile_picture.png'">
+              </nz-avatar>
+              <nz-comment-content>
+                <div class="bubble">
+                  {{ msg.content }}
+                </div>
+              </nz-comment-content>
+            </nz-comment>
+          </div>
+        }
       </nz-list>
     </div>
 
     <div class="chat-footer">
       <nz-input-group [nzSuffix]="suffixIconButton">
         <input type="text"
-               nz-input
-               [(ngModel)]="newMessage"
-               (keyup.enter)="send()"
-               placeholder="Write a message..." />
-      </nz-input-group>
-      <ng-template #suffixIconButton>
-        <button nz-button nzType="primary" nzShape="circle" (click)="send()" [disabled]="!newMessage.trim()">
-          <i class="fa-solid fa-paper-plane"></i>
-        </button>
-      </ng-template>
-    </div>
-  </nz-card>
-</div>
+          nz-input
+          [(ngModel)]="newMessage"
+          (keyup.enter)="send()"
+          placeholder="Write a message..." />
+        </nz-input-group>
+        <ng-template #suffixIconButton>
+          <button nz-button nzType="primary" nzShape="circle" (click)="send()" [disabled]="!newMessage.trim()">
+            <fa-icon [icon]="paperPlane"></fa-icon>
+          </button>
+        </ng-template>
+      </div>
+    </nz-card>
+  </div>
 
-<ng-template #chatTitle>
-  <span class="title-text">{{ friendName }}</span>
-</ng-template>
+  <ng-template #chatTitle>
+    <span class="title-text">{{ friendName }}</span>
+  </ng-template>

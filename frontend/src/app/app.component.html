@@ -1,26 +1,22 @@
-<ng-container *ngIf="auth.currentUser(); else loggedOut">
+@if (auth.currentUser()) {
   <app-navbar></app-navbar>
-
   <nz-layout class="app-layout">
-  <nz-sider
-    class="menu-sidebar"
-    nzCollapsible
-    [(nzCollapsed)]="isCollapsed"
-    [nzCollapsedWidth]="80"
-    [nzWidth]="250"
-  >
-    <app-sidebar></app-sidebar>
-  </nz-sider>
-
-  <nz-layout>
-    <nz-content class="main-content">
-      <router-outlet></router-outlet>
-    </nz-content>
+    <nz-sider
+      class="menu-sidebar"
+      nzCollapsible
+      [(nzCollapsed)]="isCollapsed"
+      [nzCollapsedWidth]="80"
+      [nzWidth]="250"
+      >
+      <app-sidebar></app-sidebar>
+    </nz-sider>
+    <nz-layout>
+      <nz-content class="main-content">
+        <router-outlet></router-outlet>
+      </nz-content>
+    </nz-layout>
   </nz-layout>
-</nz-layout>
-
-</ng-container>
-
-<ng-template #loggedOut>
+} @else {
   <router-outlet></router-outlet>
-</ng-template>
+}
+

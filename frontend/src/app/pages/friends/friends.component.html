@@ -1,77 +1,74 @@
 <div class="friends-container">
-  <nz-tabset [(nzSelectedIndex)]="selectedTab">
+  <nz-tabs [(nzSelectedIndex)]="selectedTab">
 
     <!-- FRIENDS -->
     <nz-tab nzTitle="Friends">
       <nz-list nzItemLayout="horizontal">
-        <nz-list-item *ngFor="let friend of friends()">
-          <nz-list-item-meta
-            [nzAvatar]="friendAvatar"
-            [nzTitle]="friendTitle"
-          ></nz-list-item-meta>
-
-          <ng-template #friendAvatar>
-            <nz-avatar
-              [nzSrc]="friend.friendProfilePic || 'default_profile_picture.png'"
-              nzSize="large"
-            ></nz-avatar>
-          </ng-template>
-
-          <ng-template #friendTitle>
-            <a class="profile-link" (click)="goToChat(friend.friendId, friend.friendName)">
-              {{ friend.friendName }}
-            </a>
-          </ng-template>
-
-          <button
-            nz-button
-            nzDanger
-            nzType="default"
-            (click)="removeFriend(friend.friendId)"
-            >
-            Remove
-          </button>
-        </nz-list-item>
+        @for (friend of friends(); track friend) {
+          <nz-list-item>
+            <nz-list-item-meta
+              [nzAvatar]="friendAvatar"
+              [nzTitle]="friendTitle"
+            ></nz-list-item-meta>
+            <ng-template #friendAvatar>
+              <nz-avatar
+                [nzSrc]="friend.friendProfilePic || 'default_profile_picture.png'"
+                nzSize="large"
+              ></nz-avatar>
+            </ng-template>
+            <ng-template #friendTitle>
+              <a class="profile-link" (click)="goToChat(friend.friendId, friend.friendName)">
+                {{ friend.friendName }}
+              </a>
+            </ng-template>
+            <button
+              nz-button
+              nzDanger
+              nzType="default"
+              (click)="removeFriend(friend.friendId)"
+              >
+              Remove
+            </button>
+          </nz-list-item>
+        }
       </nz-list>
     </nz-tab>
 
     <!-- PENDING -->
     <nz-tab nzTitle="Pending">
       <nz-list nzItemLayout="horizontal">
-        <nz-list-item *ngFor="let user of pendingRequests()">
-          <nz-list-item-meta
-            [nzAvatar]="pendingAvatar"
-            [nzTitle]="pendingTitle"
-          ></nz-list-item-meta>
-
-          <ng-template #pendingAvatar>
-            <nz-avatar
-              [nzSrc]="user.requesterPic || 'default_profile_picture.png'"
-              nzSize="large"
-            ></nz-avatar>
-          </ng-template>
-
-          <ng-template #pendingTitle>
-            <span class="name">{{ user.requesterName }}</span>
-          </ng-template>
-
-              <button
-                nz-button
-                nzType="primary"
-                (click)="acceptRequest(user.requesterId)"
+        @for (user of pendingRequests(); track user) {
+          <nz-list-item>
+            <nz-list-item-meta
+              [nzAvatar]="pendingAvatar"
+              [nzTitle]="pendingTitle"
+            ></nz-list-item-meta>
+            <ng-template #pendingAvatar>
+              <nz-avatar
+                [nzSrc]="user.requesterPic || 'default_profile_picture.png'"
+                nzSize="large"
+              ></nz-avatar>
+            </ng-template>
+            <ng-template #pendingTitle>
+              <span class="name">{{ user.requesterName }}</span>
+            </ng-template>
+            <button
+              nz-button
+              nzType="primary"
+              (click)="acceptRequest(user.requesterId)"
               >
-                Accept
-              </button>
-
-              <button
-                nz-button
-                nzDanger
-                nzType="default"
-                (click)="removeFriend(user.requesterId)"
+              Accept
+            </button>
+            <button
+              nz-button
+              nzDanger
+              nzType="default"
+              (click)="removeFriend(user.requesterId)"
               >
-                Decline
-              </button>
-        </nz-list-item>
+              Decline
+            </button>
+          </nz-list-item>
+        }
       </nz-list>
     </nz-tab>
 
@@ -85,60 +82,62 @@
             (ngModelChange)="onQueryChange()"
             (keyup.enter)="onSearch()"
             placeholder="Search by name or email"
-          />
-        </nz-input-group>
+            />
+          </nz-input-group>
 
-        <ng-template #searchBtnTpl>
-          <button
-            nz-button
-            nzType="primary"
-            nzSearch
-            (click)="onSearch()"
-            [disabled]="!searchQuery.trim()"
-          >
-            Search
-          </button>
-        </ng-template>
-      </div>
-
-      <nz-list nzItemLayout="horizontal" *ngIf="searchResults().length">
-        <nz-list-item *ngFor="let user of searchResults()">
-          <nz-list-item-meta
-            [nzAvatar]="searchAvatar"
-            [nzTitle]="searchTitle"
-            [nzDescription]="searchDesc"
-          ></nz-list-item-meta>
-
-          <ng-template #searchAvatar>
-            <nz-avatar
-              [nzSrc]="user.profilePictureUrl || 'default_profile_picture.png'"
-              nzSize="large"
-            ></nz-avatar>
+          <ng-template #searchBtnTpl>
+            <button
+              nz-button
+              nzType="primary"
+              nzSearch
+              (click)="onSearch()"
+              [disabled]="!searchQuery.trim()"
+              >
+              Search
+            </button>
           </ng-template>
+        </div>
 
-          <ng-template #searchTitle>
-            <span class="name">{{ user.name }}</span>
-          </ng-template>
+        @if (searchResults().length) {
+          <nz-list nzItemLayout="horizontal">
+            @for (user of searchResults(); track user) {
+              <nz-list-item>
+                <nz-list-item-meta
+                  [nzAvatar]="searchAvatar"
+                  [nzTitle]="searchTitle"
+                  [nzDescription]="searchDesc"
+                ></nz-list-item-meta>
+                <ng-template #searchAvatar>
+                  <nz-avatar
+                    [nzSrc]="user.profilePictureUrl || 'default_profile_picture.png'"
+                    nzSize="large"
+                  ></nz-avatar>
+                </ng-template>
+                <ng-template #searchTitle>
+                  <span class="name">{{ user.name }}</span>
+                </ng-template>
+                <ng-template #searchDesc>
+                  <span class="email">{{ user.email }}</span>
+                </ng-template>
+                <button
+                  nz-button
+                  nzType="primary"
+                  [disabled]="user.requested"
+                  (click)="sendRequest(user.id)"
+                  >
+                  {{ user.requested ? 'Requested' : 'Add' }}
+                </button>
+              </nz-list-item>
+            }
+          </nz-list>
+        }
 
-          <ng-template #searchDesc>
-            <span class="email">{{ user.email }}</span>
-          </ng-template>
+        @if (searchResults().length === 0 && searchQuery.trim()) {
+          <div class="empty">
+            No users found.
+          </div>
+        }
+      </nz-tab>
 
-          <button
-            nz-button
-            nzType="primary"
-            [disabled]="user.requested"
-            (click)="sendRequest(user.id)"
-          >
-            {{ user.requested ? 'Requested' : 'Add' }}
-          </button>
-        </nz-list-item>
-      </nz-list>
-
-      <div class="empty" *ngIf="searchResults().length === 0 && searchQuery.trim()">
-        No users found.
-      </div>
-    </nz-tab>
-
-  </nz-tabset>
-</div>
+    </nz-tabs>
+  </div>

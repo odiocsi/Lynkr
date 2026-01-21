@@ -14,24 +14,26 @@
   </nz-card>
 
   <div class="posts-list">
-    <nz-card *ngFor="let post of posts()" class="post-card">
-      <nz-card-meta
-        [nzAvatar]="avatarTemplate"
-        [nzTitle]="post.authorName"
-        [nzDescription]="post.createdAt | date:'medium'">
-      </nz-card-meta>
+    @for (post of posts(); track post) {
+      <nz-card class="post-card">
+        <nz-card-meta
+          [nzAvatar]="avatarTemplate"
+          [nzTitle]="post.authorName"
+          [nzDescription]="post.createdAt | date:'medium'">
+        </nz-card-meta>
+        <ng-template #avatarTemplate>
+          <nz-avatar [nzSrc]="post.profilePictureUrl || 'default_profile_picture.png' "></nz-avatar>
+        </ng-template>
+        <div class="post-content">
+          <p>{{ post.content }}</p>
+        </div>
+      </nz-card>
+    }
 
-      <ng-template #avatarTemplate>
-        <nz-avatar [nzSrc]="post.profilePictureUrl || 'default_profile_picture.png' "></nz-avatar>
-      </ng-template>
-
-      <div class="post-content">
-        <p>{{ post.content }}</p>
+    @if (posts().length === 0) {
+      <div class="empty-feed">
+        <p>No posts to show. Add some friends to see their updates!</p>
       </div>
-    </nz-card>
-
-    <div *ngIf="posts().length === 0" class="empty-feed">
-      <p>No posts to show. Add some friends to see their updates!</p>
-    </div>
+    }
   </div>
 </div>

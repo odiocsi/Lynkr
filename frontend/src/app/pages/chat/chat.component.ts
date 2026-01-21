@@ -8,10 +8,13 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCommentModule } from 'ng-zorro-antd/comment';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzListModule } from 'ng-zorro-antd/list';
+import { NzDropdownModule } from 'ng-zorro-antd/dropdown';
+
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from '../../services/auth.service';
 import { ChatService } from '../../services/chat.service';
@@ -22,6 +25,7 @@ import { ChatService } from '../../services/chat.service';
   imports: [
     CommonModule,
     FormsModule,
+    FaIconComponent,
     NzCardModule,
     NzListModule,
     NzAvatarModule,
@@ -29,12 +33,14 @@ import { ChatService } from '../../services/chat.service';
     NzInputModule,
     NzIconModule,
     NzButtonModule,
-    NzDropDownModule
+    NzDropdownModule
   ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.less']
 })
 export class ChatComponent implements OnInit, OnDestroy {
+  paperPlane = faPaperPlane;
+
   messages: any[] = [];
   newMessage: string = '';
   conversationId: string | null = null;

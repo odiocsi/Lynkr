@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NgIf, NgFor } from '@angular/common';
+
 import { FriendService, Friend, PendingRequest } from '../../services/friend.service';
 
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
@@ -14,17 +14,15 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   standalone: true,
-  imports:[
+  imports: [
     FormsModule,
-    NgIf,
-    NgFor,
     NzTabsModule,
     NzListModule,
     NzAvatarModule,
     NzInputModule,
     NzSegmentedModule,
-    NzButtonModule,
-  ],
+    NzButtonModule
+],
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.less']
 })
@@ -99,6 +97,7 @@ export class FriendsComponent implements OnInit {
     next: () => {
       this.loadPending();
       this.loadFriends();
+      this.friendService.updateFriendsList();
       this.selectedTab = 0;
       this.message.success('You have accepted a friends request.');
     },

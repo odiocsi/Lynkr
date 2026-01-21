@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { AuthService } from './services/auth.service';
@@ -12,7 +12,6 @@ import { SidebarComponent } from "./components/sidebar/sidebar.component";
   standalone: true,
   imports: [
     RouterOutlet,
-    CommonModule,
     NzLayoutModule,
     NzMenuModule,
     NavbarComponent,
