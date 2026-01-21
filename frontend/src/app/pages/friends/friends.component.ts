@@ -97,7 +97,6 @@ export class FriendsComponent implements OnInit {
     next: () => {
       this.loadPending();
       this.loadFriends();
-      this.friendService.updateFriendsList();
       this.selectedTab = 0;
       this.message.success('You have accepted a friends request.');
     },
