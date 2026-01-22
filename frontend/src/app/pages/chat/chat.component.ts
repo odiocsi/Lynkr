@@ -61,12 +61,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentUserId = this.auth.currentUser()?.userId ?? null;
-    const data = localStorage.getItem('chat_info');
-    if(data){
-      const chatInformation = JSON.parse(data);
-      this.friendName = chatInformation.friendName;
-      this.profilePictureUrl = chatInformation.profilePictureUrl;
-    }
 
     this.routeSubscription = this.route.paramMap
     .pipe(
@@ -87,6 +81,12 @@ export class ChatComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.conversationId = res.conversationId;
 
+          const data = localStorage.getItem('chat_info');
+          if(data){
+            const chatInformation = JSON.parse(data);
+            this.friendName = chatInformation.friendName;
+            this.profilePictureUrl = chatInformation.profilePictureUrl;
+          }
           // Load message history
           this.chatService.loadMessages(this.conversationId).subscribe({
             next: (msgs) => {
