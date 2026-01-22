@@ -35,7 +35,7 @@ jobs:
 
       - name: Build
         working-directory: frontend
-        run: npm run build -- --configuration development --base-href "/Lynkr/" --deploy-url "/Lynkr/"
+        run: npm run build -- --configuration production --base-href "/Lynkr/" --deploy-url "/Lynkr/"
 
       - name: Add SPA fallback (404.html)
         working-directory: frontend
