@@ -37,9 +37,11 @@ export class SidebarComponent implements OnInit {
   }
 
   goToChat(friendId: number, friendName: string, profilePictureUrl: string | null) {
-    this.router.navigate(['/chat', friendId, {
-      name: friendName,
+    const data = {
+      friendName: friendName,
       profilePictureUrl: profilePictureUrl
-    }]);
+    }
+    localStorage.setItem('chat_info', JSON.stringify(data));
+    this.router.navigate(['/chat', friendId,]);
   }
 }
