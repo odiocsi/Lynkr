@@ -9,9 +9,9 @@ export interface Post {
   createdAt: string;
   userId: number;
   authorName: string;
-  profilePictureUrl: string | null;
-  likedByCurrentUser: boolean;
-  likesCount: number;
+  authorProfilePic: string | null;
+  isLikedByCurrentUser: boolean;
+  likeCount: number;
 }
 
 export interface PostCreateDto {
@@ -37,4 +37,11 @@ export class PostService {
   createPost(dto: PostCreateDto): Observable<any> {
     return this.http.post(this.apiUrl, dto );
   }
+
+  LikePost(postId: number): Observable<{ isLiked: boolean; message: string }> {
+  return this.http.post<{ isLiked: boolean; message: string }>(
+    `${this.apiUrl}/${postId}/like`,
+    {}
+  );
+}
 }

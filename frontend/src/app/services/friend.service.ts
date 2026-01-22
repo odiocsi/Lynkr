@@ -1,6 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap, switchMap } from 'rxjs';
 import { ApiService } from './api.service';
 
 export interface Friend {
@@ -22,33 +22,49 @@ export class FriendService {
   private friendshipUrl: string;
   private userUrl: string;
 
-  public friends = signal<Friend[]>([]);
+  private friendsSubject = new BehaviorSubject<Friend[]>([]);
+  friends$ = this.friendsSubject.asObservable();
+
+  private pendingSubject = new BehaviorSubject<PendingRequest[]>([]);
+  pending$ = this.pendingSubject.asObservable();
 
   constructor(private http: HttpClient, private apiService: ApiService) {
-    this.userUrl = this.apiService.API_URL + "/User";
-    this.friendshipUrl = this.apiService.API_URL + "/Friendship";
+    this.userUrl = this.apiService.API_URL + '/User';
+    this.friendshipUrl = this.apiService.API_URL + '/Friendship';
   }
 
-
-  getFriends(): Observable<Friend[]> {
-    return this.http.get<Friend[]>(`${this.friendshipUrl}/list`);
+  loadFriends(): Observable<Friend[]> {
+    return this.http.get<Friend[]>(`${this.friendshipUrl}/list`).pipe(
+      tap(friends => this.friendsSubject.next(friends ?? []))
+    );
   }
 
-  getPendingRequests(): Observable<PendingRequest[]> {
-    return this.http.get<PendingRequest[]>(`${this.friendshipUrl}/pending`);
+  loadPending(): Observable<PendingRequest[]> {
+    return this.http.get<PendingRequest[]>(`${this.friendshipUrl}/pending`).pipe(
+      tap(reqs => this.pendingSubject.next(reqs ?? []))
+    );
   }
 
   sendFriendRequest(targetUserId: number): Observable<any> {
     return this.http.post(`${this.friendshipUrl}/request`, { targetUserId }, { responseType: 'text' });
   }
 
+  // IMPORTANT: backend is PUT accept and expects { requesterId }
   acceptFriendRequest(requesterId: number): Observable<any> {
-    return this.http.put(`${this.friendshipUrl}/accept`, { requesterId }, { responseType: 'text' });
+    return this.http.put(`${this.friendshipUrl}/accept`, { requesterId }, {responseType: 'text'}).pipe(
+      switchMap(() => this.loadPending()), // refresh pending after accept
+      tap(() => { this.loadFriends().subscribe(); }) // refresh friends too
+    );
   }
 
+  // IMPORTANT: backend is DELETE delete and expects body { otherUserId }
   removeFriend(otherUserId: number): Observable<any> {
-    // Rejects or deletes friendship
-    return this.http.delete(`${this.friendshipUrl}/delete`, { body: { otherUserId } });
+    return this.http.delete(`${this.friendshipUrl}/delete`, {
+      body: { otherUserId }
+    }).pipe(
+      switchMap(() => this.loadPending()),
+      tap(() => { this.loadFriends().subscribe(); })
+    );
   }
 
   searchUsers(query: string): Observable<any[]> {

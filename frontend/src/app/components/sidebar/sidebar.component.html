@@ -3,16 +3,18 @@
 
     <li nz-menu-group nzTitle="Friends">
       <ul>
-        @for (friend of friendService.friends(); track friend) {
+        @for (friend of friendService.friends$ | async; track friend) {
           <li nz-menu-item (click)="goToChat(friend.friendId, friend.friendName)">
             <nz-avatar nzSize="small" [nzSrc]="friend.friendProfilePic || 'default_profile_picture.png'" nzIcon="user"></nz-avatar>
             <span style="margin-left: 8px;">{{ friend.friendName }}</span>
           </li>
         }
-        @if (friendService.friends().length === 0) {
-          <li nz-menu-item nzDisabled>
-            <span>No friends yet</span>
-          </li>
+        @if ((friendService.friends$ | async); as friends) {
+          @if(friends.length === 0){
+            <li nz-menu-item nzDisabled>
+              <span>No friends yet</span>
+            </li>
+          }
         }
       </ul>
     </li>

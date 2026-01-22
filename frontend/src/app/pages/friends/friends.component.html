@@ -1,10 +1,13 @@
 <div class="friends-container">
-  <nz-tabs [(nzSelectedIndex)]="selectedTab">
+  <nz-tabs
+  [(nzSelectedIndex)]="selectedTab"
+  (nzSelectedIndexChange)="onTabChange($event)"
+>
 
     <!-- FRIENDS -->
     <nz-tab nzTitle="Friends">
       <nz-list nzItemLayout="horizontal">
-        @for (friend of friends(); track friend) {
+        @for (friend of friendService.friends$ | async; track friend) {
           <nz-list-item>
             <nz-list-item-meta
               [nzAvatar]="friendAvatar"
@@ -37,17 +40,17 @@
     <!-- PENDING -->
     <nz-tab nzTitle="Pending">
       <nz-list nzItemLayout="horizontal">
-        @for (user of pendingRequests(); track user) {
+        @for (user of friendService.pending$ | async; track user.requesterId) {
           <nz-list-item>
             <nz-list-item-meta
               [nzAvatar]="pendingAvatar"
               [nzTitle]="pendingTitle"
-            ></nz-list-item-meta>
+            />
             <ng-template #pendingAvatar>
               <nz-avatar
                 [nzSrc]="user.requesterPic || 'default_profile_picture.png'"
                 nzSize="large"
-              ></nz-avatar>
+              />
             </ng-template>
             <ng-template #pendingTitle>
               <span class="name">{{ user.requesterName }}</span>
@@ -82,62 +85,62 @@
             (ngModelChange)="onQueryChange()"
             (keyup.enter)="onSearch()"
             placeholder="Search by name or email"
-            />
-          </nz-input-group>
+          />
+        </nz-input-group>
 
-          <ng-template #searchBtnTpl>
-            <button
-              nz-button
-              nzType="primary"
-              nzSearch
-              (click)="onSearch()"
-              [disabled]="!searchQuery.trim()"
-              >
-              Search
-            </button>
-          </ng-template>
+        <ng-template #searchBtnTpl>
+          <button
+            nz-button
+            nzType="primary"
+            nzSearch
+            (click)="onSearch()"
+            [disabled]="!searchQuery.trim()"
+            >
+            Search
+          </button>
+        </ng-template>
+      </div>
+
+      @if (searchResults().length) {
+        <nz-list nzItemLayout="horizontal">
+          @for (user of searchResults(); track user) {
+            <nz-list-item>
+              <nz-list-item-meta
+                [nzAvatar]="searchAvatar"
+                [nzTitle]="searchTitle"
+                [nzDescription]="searchDesc"
+              ></nz-list-item-meta>
+              <ng-template #searchAvatar>
+                <nz-avatar
+                  [nzSrc]="user.profilePictureUrl || 'default_profile_picture.png'"
+                  nzSize="large"
+                ></nz-avatar>
+              </ng-template>
+              <ng-template #searchTitle>
+                <span class="name">{{ user.name }}</span>
+              </ng-template>
+              <ng-template #searchDesc>
+                <span class="email">{{ user.email }}</span>
+              </ng-template>
+              <button
+                nz-button
+                nzType="primary"
+                [disabled]="user.requested"
+                (click)="sendRequest(user.id)"
+                >
+                {{ user.requested ? 'Requested' : 'Add' }}
+              </button>
+            </nz-list-item>
+          }
+        </nz-list>
+      }
+
+      @if (searchResults().length === 0 && searchQuery.trim()) {
+        <div class="empty">
+          No users found.
         </div>
+      }
+    </nz-tab>
 
-        @if (searchResults().length) {
-          <nz-list nzItemLayout="horizontal">
-            @for (user of searchResults(); track user) {
-              <nz-list-item>
-                <nz-list-item-meta
-                  [nzAvatar]="searchAvatar"
-                  [nzTitle]="searchTitle"
-                  [nzDescription]="searchDesc"
-                ></nz-list-item-meta>
-                <ng-template #searchAvatar>
-                  <nz-avatar
-                    [nzSrc]="user.profilePictureUrl || 'default_profile_picture.png'"
-                    nzSize="large"
-                  ></nz-avatar>
-                </ng-template>
-                <ng-template #searchTitle>
-                  <span class="name">{{ user.name }}</span>
-                </ng-template>
-                <ng-template #searchDesc>
-                  <span class="email">{{ user.email }}</span>
-                </ng-template>
-                <button
-                  nz-button
-                  nzType="primary"
-                  [disabled]="user.requested"
-                  (click)="sendRequest(user.id)"
-                  >
-                  {{ user.requested ? 'Requested' : 'Add' }}
-                </button>
-              </nz-list-item>
-            }
-          </nz-list>
-        }
-
-        @if (searchResults().length === 0 && searchQuery.trim()) {
-          <div class="empty">
-            No users found.
-          </div>
-        }
-      </nz-tab>
-
-    </nz-tabs>
-  </div>
+  </nz-tabs>
+</div>

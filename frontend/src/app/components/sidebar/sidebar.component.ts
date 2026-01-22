@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { Router } from '@angular/router';
 
 
@@ -17,27 +18,22 @@ import { Observable } from 'rxjs';
     NzIconModule,
     NzLayoutModule,
     NzMenuModule,
-    NzAvatarModule
+    NzAvatarModule,
+    AsyncPipe
 ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.less'
 })
 export class SidebarComponent implements OnInit {
   isCollapsed = true;
-  friends: any;
+  friends$: Observable<Friend[]>;
 
   constructor(public friendService: FriendService, private router: Router) {
-    this.friends = inject(this.friendService.friends);
-  }
-  ngOnInit() {
-    this.loadFriends();
+    this.friends$ = this.friendService.friends$;
   }
 
-  loadFriends() {
-    this.friendService.getFriends().subscribe({
-      next: (res) => this.friendService.friends.set(res),
-      error: (err) => console.error('Could not load friends', err)
-    });
+  ngOnInit() {
+    this.friendService.loadFriends().subscribe();
   }
 
   goToChat(friendId: number, friendName: string) {

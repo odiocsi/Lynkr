@@ -14,7 +14,7 @@
   </nz-card>
 
   <div class="posts-list">
-    @for (post of posts(); track post) {
+    @for (post of posts(); track post.id) {
       <nz-card class="post-card">
         <nz-card-meta
           [nzAvatar]="avatarTemplate"
@@ -22,10 +22,18 @@
           [nzDescription]="post.createdAt | date:'medium'">
         </nz-card-meta>
         <ng-template #avatarTemplate>
-          <nz-avatar [nzSrc]="post.profilePictureUrl || 'default_profile_picture.png' "></nz-avatar>
+          <nz-avatar [nzSrc]="post.authorProfilePic || 'default_profile_picture.png' "></nz-avatar>
         </ng-template>
         <div class="post-content">
           <p>{{ post.content }}</p>
+        </div>
+        <div class="likes" (click)="LikePost(post.id)">
+          {{post.likeCount}}
+          @if(post.isLikedByCurrentUser){
+            <fa-icon class="liked-post" [icon]="heartIconSolid"></fa-icon>
+          } @else {
+            <fa-icon [icon]="heartIconRegular"></fa-icon>
+          }
         </div>
       </nz-card>
     }

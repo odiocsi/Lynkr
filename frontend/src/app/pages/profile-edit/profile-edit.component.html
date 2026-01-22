@@ -1,9 +1,13 @@
 <nz-card nzTitle="Edit Profile" class="card">
   <div class="row">
     <div class="left">
+
+      <!-- @if(){
+
+      } -->
       <img
         class="avatar"
-        [src]="profilePictureUrl || 'assets/default-avatar.png'"
+        [src]="this.user.profilePic || 'default_profile_picture.png'"
         alt="avatar"
         />
       </div>
@@ -12,8 +16,8 @@
         <label class="label">Username</label>
         <input
           nz-input
-          [(ngModel)]="username"
-          placeholder="Enter new username"
+          [(ngModel)]="newUserName"
+          placeholder="{{user.name}}"
           />
 
           <label class="label" style="margin-top: 12px;">

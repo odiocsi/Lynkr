@@ -63,9 +63,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe((p) => {
       this.friendName = p.get('name')
     });
-    console.log(this.friendName)
 
-    // When navigating between friends, load / join the correct conversation.
     this.routeSubscription = this.route.paramMap
     .pipe(
       switchMap((params) => {

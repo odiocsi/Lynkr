@@ -96,7 +96,6 @@ namespace Lynkr.Hubs
                 SenderProfilePictureUrl = sender.ProfilePictureUrl
             };
 
-            // Send in real time ONLY to the recipient (and echo to sender so UI updates immediately)
             await Clients.User(recipientUserId.ToString()).SendAsync("ReceiveMessage", dto);
             await Clients.User(senderId.ToString()).SendAsync("ReceiveMessage", dto);
 

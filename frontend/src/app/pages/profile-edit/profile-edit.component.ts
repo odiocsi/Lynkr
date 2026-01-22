@@ -19,29 +19,23 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./profile-edit.component.less']
 })
 export class EditProfileComponent implements OnInit {
-  username = '';
-  profilePictureUrl = '';
-
+  public user: any;
   saving = false;
 
+  newUserName?: string;
   selectedFile?: File;
-  uploading: boolean = false;
 
   constructor(
     private auth: AuthService,
     private userService: UserService,
-    private msg: NzMessageService,
+    private message: NzMessageService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const u = JSON.parse(storedUser);
-        this.username = u.username ?? u.name ?? '';
-        this.profilePictureUrl = u.profilePictureUrl ?? u.profilePicture ?? '';
-      } catch {}
+    const data = localStorage.getItem('user_info');
+    if(data){
+      this.user = JSON.parse(data);
     }
   }
 
@@ -52,14 +46,14 @@ export class EditProfileComponent implements OnInit {
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      this.msg.error('Only JPG, PNG, or WEBP images are allowed.');
+      this.message.error('Only JPG, PNG, or WEBP images are allowed.');
       input.value = '';
       return;
     }
 
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      this.msg.error('Max file size is 5MB.');
+      this.message.error('Max file size is 5MB.');
       input.value = '';
       return;
     }
@@ -68,38 +62,38 @@ export class EditProfileComponent implements OnInit {
   }
 
   save() {
-    if (!this.username && !this.selectedFile) {
-      this.msg.warning('Nothing to update');
+    if (!this.newUserName && !this.selectedFile) {
+      this.message.warning('Nothing to update');
       return;
     }
 
     this.saving = true;
 
-    this.userService.updateProfile(this.username, this.selectedFile).subscribe({
+    this.userService.updateProfile(this.newUserName, this.selectedFile).subscribe({
       next: (res) => {
-        this.profilePictureUrl = res.profilePictureUrl ?? '';
+        const newUserName = res.name ?? null;
+        const newUserProfilePictureUrl = res.profilePictureUrl ?? null;
 
-        const storedUser = localStorage.getItem('user_info');
-        let userObj: any = {};
-        if (storedUser) {
-          try { userObj = JSON.parse(storedUser); } catch { userObj = {}; }
+        const data = localStorage.getItem('user_info');
+        if (!data) {
+          console.error("no stored user")
+          return;
         }
+        const storedUser = JSON.parse(data);
 
-        userObj = {
-          ...userObj,
-          name: res.name ?? this.username,
-          profilePic: res.profilePictureUrl ?? null
+        const newUser = {
+          userId: storedUser.userId,
+          name: newUserName ?? this.user.name,
+          profilePic: newUserProfilePictureUrl ?? this.user.profilePic
         };
-
-        localStorage.setItem('user_info', JSON.stringify(userObj));
+        localStorage.setItem('user_info', JSON.stringify(newUser));
+        this.message.success('Profile updated');
 
         this.auth.updateCurrentUer();
-
-        this.msg.success('Profile updated');
         this.router.navigate(['/profile']);
       },
       error: (err) => {
-        this.msg.error(err?.error?.message ?? 'Update failed');
+        this.message.error(err?.error?.message ?? 'Update failed');
       },
       complete: () => {
         this.saving = false;
