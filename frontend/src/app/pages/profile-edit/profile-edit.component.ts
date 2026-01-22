@@ -33,10 +33,7 @@ export class EditProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const data = localStorage.getItem('user_info');
-    if(data){
-      this.user = JSON.parse(data);
-    }
+    const data = this.auth.currentUser();
   }
 
   onFileSelected(event: Event) {
@@ -74,22 +71,20 @@ export class EditProfileComponent implements OnInit {
         const newUserName = res.name ?? null;
         const newUserProfilePictureUrl = res.profilePictureUrl ?? null;
 
-        const data = localStorage.getItem('user_info');
-        if (!data) {
-          console.error("no stored user")
+        const storedUser = this.auth.currentUser()
+        if(!storedUser){
+          console.error("no current user");
           return;
         }
-        const storedUser = JSON.parse(data);
 
         const newUser = {
           userId: storedUser.userId,
           name: newUserName ?? this.user.name,
           profilePic: newUserProfilePictureUrl ?? this.user.profilePic
         };
-        localStorage.setItem('user_info', JSON.stringify(newUser));
+        this.auth.updateCurrentUser(newUser)
         this.message.success('Profile updated');
 
-        this.auth.updateCurrentUer();
         this.router.navigate(['/profile']);
       },
       error: (err) => {
