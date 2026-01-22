@@ -17,7 +17,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from '../../services/auth.service';
-import { ChatService } from '../../services/chat.service';
+import { ChatService, ChatMessage } from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat',
@@ -41,12 +41,13 @@ import { ChatService } from '../../services/chat.service';
 export class ChatComponent implements OnInit, OnDestroy {
   paperPlane = faPaperPlane;
 
-  messages: any[] = [];
+  messages: ChatMessage[] = [];
   newMessage: string = '';
   conversationId: string | null = null;
   friendId: number | null = null;
   currentUserId: number | null = null;
   friendName: string | null = null;
+  profilePictureUrl: string | null = null;
 
   private msgSubscription?: Subscription;
   private routeSubscription?: Subscription;
@@ -61,7 +62,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.currentUserId = this.auth.currentUser()?.userId ?? null;
     this.route.paramMap.subscribe((p) => {
-      this.friendName = p.get('name')
+      console.log(p)
+      this.friendName = p.get('name');
+      this.profilePictureUrl = p.get('profilePictureUrl');
     });
 
     this.routeSubscription = this.route.paramMap

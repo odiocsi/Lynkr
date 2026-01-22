@@ -36,9 +36,10 @@ export class SidebarComponent implements OnInit {
     this.friendService.loadFriends().subscribe();
   }
 
-  goToChat(friendId: number, friendName: string) {
+  goToChat(friendId: number, friendName: string, profilePictureUrl: string | null) {
     this.router.navigate(['/chat', friendId, {
-      name: friendName
+      name: friendName,
+      profilePictureUrl: profilePictureUrl
     }]);
   }
 }

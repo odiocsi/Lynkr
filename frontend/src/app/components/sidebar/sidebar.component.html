@@ -4,7 +4,7 @@
     <li nz-menu-group nzTitle="Friends">
       <ul>
         @for (friend of friendService.friends$ | async; track friend) {
-          <li nz-menu-item (click)="goToChat(friend.friendId, friend.friendName)">
+          <li nz-menu-item (click)="goToChat(friend.friendId, friend.friendName, friend.friendProfilePic)">
             <nz-avatar nzSize="small" [nzSrc]="friend.friendProfilePic || 'default_profile_picture.png'" nzIcon="user"></nz-avatar>
             <span style="margin-left: 8px;">{{ friend.friendName }}</span>
           </li>

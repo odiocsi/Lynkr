@@ -15,7 +15,7 @@ export interface ChatMessage {
   senderName: string;
   senderProfilePictureUrl?: string | null;
   content: string;
-  sentAt: string; // ISO string
+  sentAt: string;
 }
 
 @Injectable({

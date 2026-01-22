@@ -39,5 +39,8 @@
   </div>
 
   <ng-template #chatTitle>
+    <nz-avatar nz-comment-avatar
+      [nzSrc]="profilePictureUrl || 'default_profile_picture.png'">
+    </nz-avatar>
     <span class="title-text">{{ friendName }}</span>
   </ng-template>
