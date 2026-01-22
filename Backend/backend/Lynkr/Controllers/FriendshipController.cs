@@ -134,6 +134,21 @@ namespace Lynkr.Controllers
             friendship.ActionUserId = currentUserId;
             friendship.UpdatedAt = DateTimeOffset.UtcNow;
 
+            bool conversationExists = await _context.Conversations.AnyAsync(c =>
+                (c.User1Id == currentUserId && c.User2Id == acceptDto.RequesterId) ||
+                (c.User1Id == acceptDto.RequesterId && c.User2Id == currentUserId));
+
+            if (!conversationExists)
+            {
+                var newConversation = new Conversation
+                {
+                    User1Id = currentUserId,
+                    User2Id = acceptDto.RequesterId,
+                    CreatedAt = DateTimeOffset.UtcNow
+                };
+                _context.Conversations.Add(newConversation);
+            }
+
             await _context.SaveChangesAsync();
 
             return Ok("Friend request accepted.");
