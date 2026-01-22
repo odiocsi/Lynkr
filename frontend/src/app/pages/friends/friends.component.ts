@@ -46,7 +46,6 @@ export class FriendsComponent implements OnInit {
   }
 
   onTabChange(index: any) {
-    console.log(index)
     this.selectedTab = index;
     this.refreshLists();
   }

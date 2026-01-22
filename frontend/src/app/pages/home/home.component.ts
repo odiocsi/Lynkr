@@ -47,7 +47,6 @@ export class HomeComponent implements OnInit {
     this.postService.getFeed().subscribe({
       next: (data) =>{
         this.posts.set(data)
-        console.log(this.posts()[0])
       },
       error: (err) => console.error('Error loading posts', err)
     });

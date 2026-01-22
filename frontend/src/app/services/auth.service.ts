@@ -19,6 +19,12 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router, private apiService: ApiService) {
     this.apiUrl = this.apiService.API_URL + "/User";
+    const data = localStorage.getItem('user_info');
+    if(data){
+      this.updateCurrentUser(JSON.parse(data));
+    } else{
+      this.router.navigate(['/login']);
+    }
   }
 
   // register user
